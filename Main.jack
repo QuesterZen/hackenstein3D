@@ -1,0 +1,218 @@
+// Hackenstein-3D: Escape from Castle Hackenstein part 2
+// by James Leibert February 2017
+
+// Prototype for a simplified version of Castle Wolfenstein
+// on the Hack hardware platform programmed in Jack
+// This lacks floating point, shift operators, multiply and divide,
+// trig functions, inverse square roots etc. and is very slow
+// Therefore, this prototype aims to demonstrate the ability to get
+// reasonable performance using only integer additions and multiplication
+// by small numbers. It showcases many tricks for fast integer graphics.
+
+
+/** Player interaction and game logic loop */
+class Main {
+
+    function void main() {
+
+	// Variable Declarations
+
+	// ... Arrays for communicating data between modules
+	var Array wallDistances;
+	var Array wallPatterns;
+	var Array playerLocation;
+
+	// ... Variables for managing the game
+	var char key;
+	var boolean exit, win, moved, pistolFired, sightFired;
+	var int bullet, steps, targets, i;
+	var String endText, scoreText;
+
+	// Array initialisations
+	let wallDistances = Array.new(256);
+	let wallPatterns = Array.new(256);
+	let playerLocation = Array.new(7);
+
+	// Class initialisations
+	do Walls.init();
+	do Player.init(3, 32, 0, 6, 0, Walls.paths());
+	do Display.init();
+
+	// Initialisation of game variables
+	let key = 0;               /* which key the user pressed*/
+	let moved = true;          /* only updates the display if an action took place */
+	let exit = false;          /* whether the game is over*/
+	let targets = 0;           /* how many targets have been destroyed */
+	let steps = 1000;          /* number of actions remaining */
+	let bullet = 0;            /* whether pistol fired, where the bullet is */
+	let pistolFired = false;   /* which version of the pistol to render */
+	let sightFired = false;    /* which version of the sight to render */
+
+	// MAIN LOOP
+	while (~exit) {
+
+	    // User Input
+	    // Shoot (space-bar) (can't shoot if bullet still in the air)
+	    if ((key = 32) & (bullet = 0))  {
+		let bullet = 4;
+		let moved = true;
+	    }
+	    // Forward (up-arrow)
+	    if (key = 131) {
+		do Player.reLocate(2);
+		let moved = true; }
+	    // Backward (down-arrow)
+	    if (key = 133) {
+		do Player.reLocate(-2);
+		let moved = true; }
+	    // Rotate left (left-arrow)
+	    if (key = 130) {
+		do Player.reOrient(-2);
+		let moved = true; }
+	    // Rotate right (right-arrow)
+	    if (key = 132) {
+		do Player.reOrient(2);
+		let moved = true;
+	    }
+
+	    // Only update if an action has occurred
+	    if (moved | (bullet > 0)) {
+
+		// Change the bullet's state
+		if (bullet > 0) {
+		    let bullet = bullet - 1;
+		}
+
+		// Show bullet hitting the wall and test if it was a target
+		if (bullet = 2) {
+		    let sightFired = true;
+		    if (Walls.targetInSight()) {
+			let targets = targets + 1;
+			do Walls.untarget();
+		    }
+		} else {
+		    let sightFired = false;
+		}
+		
+		// Show pistol smoke if recently fired
+		if (bullet > 0) {
+		    let pistolFired = true;
+		} else {
+		    let pistolFired = false;
+		}
+		
+		// Check to see if you won the game
+		// You must have hit all three targets and be in the
+		// same room as the exit
+		if ((targets > 2) & Walls.atExit(Player.roomNum())) {
+		    let exit = true;
+		    let win = true;
+		}
+		
+		// Update the number of steps taken and check whether
+		// you ran out of actions
+		let steps = steps -2;
+		if (steps = 0) {
+		    let exit = true;
+		    let win = false;
+		}
+
+		// Generate the wall buffers by fetching the players
+		// location and passing it to the ray casting function
+		// The data is written directly into the arrays
+		// provided by this module
+		do Player.getLocation(playerLocation);
+		do Walls.generate(playerLocation,
+				  wallDistances, wallPatterns);
+
+		// Render all of the screen elements
+		do Display.walls(wallDistances, wallPatterns);
+		
+		if (sightFired) {
+		    do Display.bitmap(Display.sf(), 32, 2, 3855);
+		} else {
+		    do Display.bitmap(Display.sc(), 32, 2, 3855);
+		}
+		if (pistolFired) {
+		    do Display.bitmap(Display.pf(), 256, 4, 6160);
+		} else {
+		    do Display.bitmap(Display.pc(), 256, 4, 6160);
+		}
+		
+		do Display.scores(targets, steps);
+
+	    } // END IF (moved or bullet)
+
+	    // End the loop and update the key presses
+	    let moved = false;
+	    let key = Keyboard.keyPressed();
+	    // Quit Game (Q)
+	    if ((key = 81) | (key = 113))  {
+		let exit = true;
+	    }
+	    
+	} // END WHILE (main loop)
+
+	// GAME OVER - Render one or other of the splash screens
+	do Screen.clearScreen();
+
+	if ((steps > 0) & (targets > 2)) {
+
+	    // YOU ESCAPED
+	    // Score XXX
+	    let scoreText = String.new(5);
+	    do scoreText.setInt(steps);
+	    let endText = String.new(10);
+	    do endText.appendChar(83); do endText.appendChar(99);
+	    do endText.appendChar(111); do endText.appendChar(114);
+	    do endText.appendChar(101); do endText.appendChar(32);
+	    let i = 0;
+	    while (i < scoreText.length()) {
+		do endText.appendChar(scoreText.charAt(i));
+		let i = i + 1;
+	    }	    
+	    do Display.splash_screen("YOU ESCAPED", endText);
+	    do scoreText.dispose();
+	    do endText.dispose();
+	    
+	} else {
+	    
+	    // GAME OVER
+	    // Hits X
+	    let scoreText = String.new(5);
+	    do scoreText.setInt(targets);
+	    let endText = String.new(10);
+	    do endText.appendChar(72); do endText.appendChar(105);
+	    do endText.appendChar(116); do endText.appendChar(115);
+	    do endText.appendChar(32);
+	    let i = 0;
+	    while (i < scoreText.length()) {
+		do endText.appendChar(scoreText.charAt(i));
+		let i = i + 1;
+	    }	    
+	    do Display.splash_screen("GAME OVER", endText);
+	    do scoreText.dispose();
+	    do endText.dispose();
+	}
+
+	// Wait for a key press before quitting
+	while (~(key = 0)) {
+	    let key = Keyboard.keyPressed();
+	}
+	while ((~(key = 32)) & (~(key = 81)) & (~(key = 113))) {
+	    let key = Keyboard.keyPressed();
+	}
+
+	// CLEAN UPS
+	do wallDistances.dispose();
+	do wallPatterns.dispose();
+	do playerLocation.dispose();
+	do Walls.cleanup();
+	do Display.cleanup();
+	do Player.cleanup();
+
+	return;
+
+    } // END FUNCTION (main)
+
+} // END CLASS (Main)
