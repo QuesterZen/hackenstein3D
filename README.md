@@ -5,8 +5,7 @@ The Hack Computer is a very simple 16-bit computer with no built-in multiply, di
 
 It is written in Jack, a Java-like language also implemented in the book. And designed to run on the VMEmulator provided by the website.
 
-This is a short demo video.
-[hackenstein3D](https://youtu.be/inFJ5EyOhpM)
+I posted a short demo video on [youTube](https://youtu.be/inFJ5EyOhpM).
 
 
 HACKENSTEIN 3D - Escape from Castle Hackenstein, Part II
