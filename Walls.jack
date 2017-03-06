@@ -564,26 +564,29 @@ class Walls {
 	    let mu = theta + atanTable[pixel];
 	    if (mu > 4095) { let mu = mu - 4096; }
 	    if (mu < 0) { let mu = mu + 4096; }
-	    let muQ1 = mu; let muSgn = 1;
+	    
 	    if (mu > 3071) {
 		let muQ1 = 4095 - mu; let muSgn = -1;
 	    } else {
 		if (mu > 2047) {
-		    let muQ1 = mu - 2048;
+		    let muQ1 = mu - 2048; let muSgn = 1;
 		} else {
 		    if (mu > 1023) {
 			let muQ1 = 2047 - mu; let muSgn = -1;
+		    } else {
+			let muQ1 = mu; let muSgn = 1;
 		    }
 		}
 	    }
+	    
 	    let tanMu64 = tanTable[muQ1] * muSgn;
-	    let cotMu64 = tanTable[1024-muQ1] * muSgn;
+	    let cotMu64 = tanTable[1023-muQ1] * muSgn;
 	    if (muQ1 > 942) {
-		let maxDeltaY = maxDelta[1024-muQ1];
+		let maxDeltaY = maxDelta[1023-muQ1];
 	    } else {
 		let maxDeltaY = 32767;
 	    }
-	    if (muQ1 < 82) {
+	    if (muQ1 < 81) {
 		let maxDeltaX = maxDelta[muQ1];
 	    } else {
 		let maxDeltaX = 32767;
@@ -613,7 +616,7 @@ class Walls {
 	    let lineX = start;
 	    let lineY = yPlayer + deltaY;
 	    let found = false;
-	    while ((~found) & (lineX > -1) & (lineX < 513)) {
+	    while ((~found) & (lineX > -1) & (lineX < 513) & (deltaY < 16384)) {
 		let vwall = lineY / 64;
 		let vwl = (lineX / 8) + vwall;
 		if ((vwl > -1) & (vwl < 72)) {
@@ -639,7 +642,7 @@ class Walls {
 		// The wall distance is measured parallel to the player's orientation
 		// and therefore requires a matrix rotation to calculate
 		let vd = ((sinTh64 * deltaX) + (cosTh64 * deltaY)) / 32; /* SLOW */
-		if (vd < 0) { let vd = -vd; }
+		if (vd < 0) { let vd = 32767; }
 		let vseg = (lineY - (vwall * 64)) / 4;
 
 	    } else {
@@ -671,7 +674,7 @@ class Walls {
 	    let lineY = start;
 	    let lineX = xPlayer + deltaX;
 	    let found = false;
-	    while ((~found) & (lineY > -1) & (lineY < 513)) {
+	    while ((~found) & (lineY > -1) & (lineY < 513) & (deltaX < 16384)) {
 		let hwall = lineX / 64;
 		let hwl = (lineY / 8) + hwall;
 		if ((hwl > -1) & (hwl < 72)) {
@@ -690,7 +693,7 @@ class Walls {
 	    }
 	    if (found & (lineX > -1) & (lineX < 513)) {
 		let hd = ((sinTh64 * deltaX) + (cosTh64 * deltaY)) / 32; /* SLOW */
-		if (hd < 0) { let hd = -hd; }
+		if (hd < 0) { let hd = 32767; }
 		let hseg = (lineX - (hwall * 64)) / 4;
 	    } else {
 		let hd = 32767;
