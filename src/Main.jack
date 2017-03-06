@@ -59,6 +59,12 @@ class Main {
 	let pistolFired = false;   /* which version of the pistol to render */
 	let sightFired = false;    /* which version of the sight to render */
 
+	// Start Up Screen
+	do Display.startUp();
+	while (~(key = 0)) { let key = Keyboard.keyPressed(); }
+	while (key = 0)    { let key = Keyboard.keyPressed(); }
+	while (~(key = 0)) { let key = Keyboard.keyPressed(); }
+
 	// MAIN LOOP
 	while (~exit) {
 

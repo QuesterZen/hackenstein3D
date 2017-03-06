@@ -541,8 +541,7 @@ class Display {
 	do Output.printString(line2);
 
 	// Display credits
-	do Output.moveCursor(21, 40);
-	do Output.printString("James Leibert 2017");
+	do Display.printString(21, 40, "James Leibert 2017");
 
 	// Wait for a key press to finish
 	while (key = 0) {
@@ -554,7 +553,32 @@ class Display {
 	
     }
 
+    /** Startup screen */
+    function void startUp() {
+	do Display.printString( 2, 18, "  H A C K E N S T E I N ");
+	do Display.printString( 4, 18, "     ####\\   ####\\ ");
+	do Display.printString( 5, 18, "     \\\\\\\\#\\  #\\\\\\\\#\\ ");
+	do Display.printString( 6, 18, "         #\\  #\\    #\\ ");
+	do Display.printString( 7, 18, "      ####\\  #\\    #\\ ");
+	do Display.printString( 8, 18, "      \\\\\\#\\  #\\    #\\ ");
+	do Display.printString( 9, 18, "         #\\  #\\   #\\\\ ");
+	do Display.printString(10, 18, "     #####\\  #####\\\\ ");
+	do Display.printString(11, 18, "     \\\\\\\\\\\\  \\\\\\\\\\\\ ");
+	do Display.printString(13, 12, "Escape from Castle Hackenstein Part II");
+	do Display.printString(19, 0, "Use arrow keys to move. Press SPACE to shoot.");
+	do Display.printString(20, 0, "Destroy the targets and find the exit.");
+	do Display.printString(22, 0, "                                      [Press SPACE to start]");
+	return;
+    }
 
+    /** String display and cleanup */
+	function void printString(int r, int c, String s) {
+	do Output.moveCursor(r, c);
+	do Output.printString(s);
+	do s.dispose();
+	return;
+    }
+    
     /** Cleans up the static arrays and strings */
     function void cleanup() {
 	do sc.dispose();
