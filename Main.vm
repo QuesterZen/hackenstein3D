@@ -47,11 +47,45 @@ push constant 0
 pop local 7
 push constant 0
 pop local 8
+call Display.startUp 0
+pop temp 0
 label WHILE_EXP0
-push local 4
+push local 3
+push constant 0
+eq
 not
 not
 if-goto WHILE_END0
+call Keyboard.keyPressed 0
+pop local 3
+goto WHILE_EXP0
+label WHILE_END0
+label WHILE_EXP1
+push local 3
+push constant 0
+eq
+not
+if-goto WHILE_END1
+call Keyboard.keyPressed 0
+pop local 3
+goto WHILE_EXP1
+label WHILE_END1
+label WHILE_EXP2
+push local 3
+push constant 0
+eq
+not
+not
+if-goto WHILE_END2
+call Keyboard.keyPressed 0
+pop local 3
+goto WHILE_EXP2
+label WHILE_END2
+label WHILE_EXP3
+push local 4
+not
+not
+if-goto WHILE_END3
 push local 3
 push constant 32
 eq
@@ -289,8 +323,8 @@ push constant 0
 not
 pop local 4
 label IF_FALSE14
-goto WHILE_EXP0
-label WHILE_END0
+goto WHILE_EXP3
+label WHILE_END3
 call Screen.clearScreen 0
 pop temp 0
 push local 10
@@ -339,13 +373,13 @@ call String.appendChar 2
 pop temp 0
 push constant 0
 pop local 12
-label WHILE_EXP1
+label WHILE_EXP4
 push local 12
 push local 14
 call String.length 1
 lt
 not
-if-goto WHILE_END1
+if-goto WHILE_END4
 push local 13
 push local 14
 push local 12
@@ -356,8 +390,8 @@ push local 12
 push constant 1
 add
 pop local 12
-goto WHILE_EXP1
-label WHILE_END1
+goto WHILE_EXP4
+label WHILE_END4
 push constant 11
 call String.new 1
 push constant 89
@@ -425,13 +459,13 @@ call String.appendChar 2
 pop temp 0
 push constant 0
 pop local 12
-label WHILE_EXP2
+label WHILE_EXP5
 push local 12
 push local 14
 call String.length 1
 lt
 not
-if-goto WHILE_END2
+if-goto WHILE_END5
 push local 13
 push local 14
 push local 12
@@ -442,8 +476,8 @@ push local 12
 push constant 1
 add
 pop local 12
-goto WHILE_EXP2
-label WHILE_END2
+goto WHILE_EXP5
+label WHILE_END5
 push constant 9
 call String.new 1
 push constant 71
@@ -474,18 +508,18 @@ push local 13
 call String.dispose 1
 pop temp 0
 label IF_END15
-label WHILE_EXP3
+label WHILE_EXP6
 push local 3
 push constant 0
 eq
 not
 not
-if-goto WHILE_END3
+if-goto WHILE_END6
 call Keyboard.keyPressed 0
 pop local 3
-goto WHILE_EXP3
-label WHILE_END3
-label WHILE_EXP4
+goto WHILE_EXP6
+label WHILE_END6
+label WHILE_EXP7
 push local 3
 push constant 32
 eq
@@ -501,11 +535,11 @@ eq
 not
 and
 not
-if-goto WHILE_END4
+if-goto WHILE_END7
 call Keyboard.keyPressed 0
 pop local 3
-goto WHILE_EXP4
-label WHILE_END4
+goto WHILE_EXP7
+label WHILE_END7
 push local 0
 call Array.dispose 1
 pop temp 0
