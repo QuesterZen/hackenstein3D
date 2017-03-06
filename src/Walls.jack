@@ -529,19 +529,19 @@ class Walls {
 	var int sinTh64, cosTh64, tanMu64, tanMu64D, cotMu64, cotMu64D;
 
 	// Integer overflow protection
-	var int maxDeltaX, maxDeltaY, absDeltaX, absDeltaY;
+	var int maxDeltaX, maxDeltaY;
 
 	// Which pixel is being rendered
 	var int pixel;
 
 	// Location of the ray intercepts with the grid lines
-	var int direction, start, deltaX, deltaY, lineX, lineY;
+	var int direction, direction8, deltaX, deltaY, lineX, lineY, lineX8, lineY8;
 
 	// Data on the closest intercept with each set of gridlines
 	// v is NS direction, h is EW direction
 	var boolean found;
-	var int vtex, vwall, vwl, vd, vseg;
-	var int htex, hwall, hwl, hd, hseg;
+	var int vtex, vwall, vwallLookup, vd, vseg;
+	var int htex, hwall, hwallLookup, hd, hseg;
 
 	// Unpack the player location and orientation data
 	let xRoom = playerLocation[0];
@@ -564,25 +564,34 @@ class Walls {
 	    let mu = theta + atanTable[pixel];
 	    if (mu > 4095) { let mu = mu - 4096; }
 	    if (mu < 0) { let mu = mu + 4096; }
-	    
-	    if (mu > 3071) {
-		let muQ1 = 4095 - mu; let muSgn = -1;
+
+	    if (mu < 1025) {
+		let muQ1 = mu; let muSgn = 1;
 	    } else {
-		if (mu > 2047) {
-		    let muQ1 = mu - 2048; let muSgn = 1;
+		if (mu < 2048) {
+		    let muQ1 = 2048 - mu; let muSgn = -1;
 		} else {
-		    if (mu > 1023) {
-			let muQ1 = 2047 - mu; let muSgn = -1;
+		    if (mu < 3073) {
+			let muQ1 = mu - 2048; let muSgn = 1;
 		    } else {
-			let muQ1 = mu; let muSgn = 1;
+			let muQ1 = 4096 - mu; let muSgn = -1;
 		    }
 		}
 	    }
-	    
-	    let tanMu64 = tanTable[muQ1] * muSgn;
-	    let cotMu64 = tanTable[1023-muQ1] * muSgn;
+
+	    // Lookup the angles to get the wall intercept multipliers
+	    if (muSgn = -1) {
+		let tanMu64 = -tanTable[muQ1];
+		let cotMu64 = -tanTable[1024-muQ1];
+	    } else {
+		let tanMu64 = tanTable[muQ1];
+		let cotMu64 = tanTable[1024-muQ1];
+	    }
+
+	    // Identify overflow limits (these can never produce a valid
+	    // intercept point)
 	    if (muQ1 > 942) {
-		let maxDeltaY = maxDelta[1023-muQ1];
+		let maxDeltaY = maxDelta[1024-muQ1];
 	    } else {
 		let maxDeltaY = 32767;
 	    }
@@ -593,144 +602,204 @@ class Walls {
 	    }
 
 	    // Calculate intercepts with the vertical grid lines until you hit a wall
-	    let start = xRoom * 64;
+
+	    // Locate the first grid line intercept
 	    if (mu < 2048) {
 		let direction = 64;
+		let direction8 = 8;
 		let cotMu64D = cotMu64;
-		let start = start + 64;
+		let lineX8 = (xRoom + 1) * 8;
 	    } else {
-		let direction = -64;
-		let cotMu64D = -cotMu64;
+		let direction = - 64;
+		let direction8 = - 8;
+		let cotMu64D = - cotMu64;
+		let lineX8 = xRoom * 8;
 	    }
-	    let deltaX = start - xPlayer;
-	    if (deltaX < 0) {
-		let absDeltaX = -deltaX;
-	    } else {
-		let absDeltaX = deltaX;
-	    }
-	    if (absDeltaX < maxDeltaX) {
+	    let lineX = lineX8 * 8;	    
+	    let deltaX = lineX - xPlayer;
+	    if (((-maxDeltaX) < deltaX) & (deltaX < maxDeltaX)) {
+
 		let deltaY = (cotMu64 * deltaX) / 64; /* Location of first intercept. SLOW */
-	    } else {
-		let deltaY = 16384;
-	    }
-	    let lineX = start;
-	    let lineY = yPlayer + deltaY;
-	    let found = false;
-	    while ((~found) & (lineX > -1) & (lineX < 513) & (deltaY < 16384)) {
-		let vwall = lineY / 64;
-		let vwl = (lineX / 8) + vwall;
-		if ((vwl > -1) & (vwl < 72)) {
-		    let vtex = yWalls[vwl];
+		let lineY = yPlayer + deltaY;
+
+		// Is it a wall?
+		if ((lineY > -1) & (lineY < 513)) {
+		    let vwall = lineY / 64;           /* SLOW */
+		    let vwallLookup = lineX8 + vwall;
+		    let vtex = yWalls[vwallLookup];
 		} else {
+		    // No intercept possible
 		    let vtex = 0;
+		    let lineX = 16384;
+		    let lineY = 16384;
 		}
-		if (vtex = 0) {
-		    let lineX = lineX + direction;
+		
+		// Look for other intercepts
+		while ((vtex = 0) & (lineX < 513) & (lineX > -1)) {
+
+		    // Other intercepts are at integer multiples of 64*cot(mu)
+		    // after the initial grid intercept
 		    let deltaX = deltaX + direction;
-
-		    // The other intercepts are at simple multiples of cot(mu) after
-		    // the initial intercept
-		    let lineY = lineY + cotMu64D;
+		    let lineX = lineX + direction;
+		    let lineX8 = lineX8 + direction8;
 		    let deltaY = deltaY + cotMu64D;
-
-		} else {
-		    let found = true;
+		    let lineY = lineY + cotMu64D;
+		    
+		    // Is it a wall?
+		    if ((lineY > -1) & (lineY < 513)) {
+			let vwall = lineY / 64;           /* SLOW */
+			let vwallLookup = lineX8 + vwall;
+			let vtex = yWalls[vwallLookup];
+		    } else {
+			// No intercept possible
+			let vtex = 0;
+			let lineX = 16384;
+			let lineY = 16384;
+		    }
+		    
 		}
+		
+	    } else {
+		// No intercept possible
+		let vtex = 0;
+		let lineX = 16384;
+		let lineY = 16384;
 	    }
-	    if (found & (lineY > -1) & (lineY < 513)) {
+
+	    // Calculate correct distance and segment if a hit was made
+	    if ((lineY < 513) & (lineY > -1)) {
 		
 		// The wall distance is measured parallel to the player's orientation
 		// and therefore requires a matrix rotation to calculate
 		let vd = ((sinTh64 * deltaX) + (cosTh64 * deltaY)) / 32; /* SLOW */
-		if (vd < 0) { let vd = 32767; }
-		let vseg = (lineY - (vwall * 64)) / 4;
+		if (vd < 0) {
+		    let vd = 32767;
+		}
+		let vseg = (lineY & 63) / 4;
 
 	    } else {
 		let vd = 32767;
 		let vseg = 0;
 	    }
 
-	    // Calculate intercepts with the first horizontal grid line with a wall
-	    let start = yRoom * 64;
+	    // Calculate intercepts with the horizontal grid lines until you hit a wall
+
+	    // Locate the first grid line intercept
 	    if ((mu < 1024) | (mu > 3071)) {
 		let direction = 64;
+		let direction8 = 8;
 		let tanMu64D = tanMu64;
-		let start = start + 64;
+		let lineY8 = (yRoom + 1) * 8;
 	    } else {
-		let direction = -64;
-		let tanMu64D = -tanMu64;
+		let direction = - 64;
+		let direction8 = - 8;
+		let tanMu64D = - tanMu64;
+		let lineY8 = yRoom * 8;
 	    }
-	    let deltaY = start - yPlayer;
-	    if (deltaY < 0) {
-		let absDeltaY  = -deltaY;
-	    } else {
-		let absDeltaY = deltaY;
-	    }
-	    if (absDeltaY < maxDeltaY) {
-		let deltaX = (tanMu64 * deltaY) / 64;  /* Location of first intercept. SLOW */
-	    } else {
-		let deltaX = 16384;
-	    }
-	    let lineY = start;
-	    let lineX = xPlayer + deltaX;
-	    let found = false;
-	    while ((~found) & (lineY > -1) & (lineY < 513) & (deltaX < 16384)) {
-		let hwall = lineX / 64;
-		let hwl = (lineY / 8) + hwall;
-		if ((hwl > -1) & (hwl < 72)) {
-		    let htex = xWalls[hwl];
+	    let lineY = lineY8 * 8;	    
+	    let deltaY = lineY - yPlayer;
+	    if (((-maxDeltaY) < deltaY) & (deltaY < maxDeltaY)) {
+
+		let deltaX = (tanMu64 * deltaY) / 64; /* Location of first intercept. SLOW */
+		let lineX = xPlayer + deltaX;
+
+		// Is it a wall?
+		if ((lineX > -1) & (lineX < 513)) {
+		    let hwall = lineX / 64;           /* SLOW */
+		    let hwallLookup = lineY8 + hwall;
+		    let htex = xWalls[hwallLookup];
 		} else {
+		    // No intercept possible
 		    let htex = 0;
+		    let lineX = 16384;
+		    let lineY = 16384;
 		}
-		if (htex = 0) {
-		    let lineY = lineY + direction;
+		
+		// Look for other intercepts
+		while ((htex = 0) & (lineY < 513) & (lineY > -1)) {
+
+		    // Other intercepts are at integer multiples of 64*cot(mu)
+		    // after the initial grid intercept
 		    let deltaY = deltaY + direction;
-		    let lineX = lineX + tanMu64D; /* Location of subsequent intercepts*/
+		    let lineY = lineY + direction;
+		    let lineY8 = lineY8 + direction8;
 		    let deltaX = deltaX + tanMu64D;
-		} else {
-		    let found = true;
+		    let lineX = lineX + tanMu64D;
+		    
+		    // Is it a wall?
+		    if ((lineX > -1) & (lineX < 513)) {
+			let hwall = lineX / 64;           /* SLOW */
+			let hwallLookup = lineY8 + hwall;
+			let htex = xWalls[hwallLookup];
+		    } else {
+			// No intercept possible
+			let htex = 0;
+			let lineX = 16384;
+			let lineY = 16384;
+		    }
+		    
 		}
+		
+	    } else {
+		// No intercept possible
+		let htex = 0;
+		let lineX = 16384;
+		let lineY = 16384;
 	    }
-	    if (found & (lineX > -1) & (lineX < 513)) {
+
+	    // Calculate correct distance and segment if a hit was made
+	    if ((lineX < 513) & (lineX > -1)) {
+		
+		// The wall distance is measured parallel to the player's orientation
+		// and therefore requires a matrix rotation to calculate
 		let hd = ((sinTh64 * deltaX) + (cosTh64 * deltaY)) / 32; /* SLOW */
-		if (hd < 0) { let hd = 32767; }
-		let hseg = (lineX - (hwall * 64)) / 4;
+		if (hd < 0) {
+		    let hd = 32767;
+		}
+		let hseg = (lineX & 63) / 4;
+
 	    } else {
 		let hd = 32767;
 		let hseg = 0;
 	    }
 
+
 	    // Which is closer, the vertical wall or horizontal wall?
 	    if (vd < hd) {
+
 		// Vertical wall is closer, pack the v-values into the buffer
 		let wallDistances[pixel] = vd;
 		if (vtex < 0) {
-		    let wallPatterns[pixel] = patterns[((-vtex) * 16) + (15 - vseg) - 16];
+		    let wallPatterns[pixel] = patterns[((-vtex) * 16) - (vseg + 1)];
 		} else {
-		    let wallPatterns[pixel] = patterns[(vtex * 16) + vseg - 16];
+		    let wallPatterns[pixel] = patterns[(vtex * 16) + (vseg - 16)];
 		}
+		
 		// Is the target in sight?
 		if (pixel = 128) {
 		    let targetWallDirection = 0;
-		    let targetWallNum = vwl;
+		    let targetWallNum = vwallLookup;
 		    if ((vtex = 3) | (vtex = -3)) {
 			let targetVisible = true;
 		    } else {
 			let targetVisible = false;
 		    }
 		}
+		
 	    } else {
+		
 		// Horizontal wall is closer, pack the h-values into the buffer
 		let wallDistances[pixel] = hd;
 		if (htex < 0) {
-		    let wallPatterns[pixel] = patterns[((-htex) * 16) + (15 - hseg) - 16];
+		    let wallPatterns[pixel] = patterns[((-htex) * 16) - (hseg + 1)];
 		} else {
-		    let wallPatterns[pixel] = patterns[(htex * 16) + hseg - 16];
+		    let wallPatterns[pixel] = patterns[(htex * 16) + (hseg - 16)];
 		}
+
 		// Is the target in sight?
 		if (pixel = 128) {
 		    let targetWallDirection = 0;
-		    let targetWallNum = hwl;
+		    let targetWallNum = hwallLookup;
 		    if ((htex = 3) | (htex = -3)) {
 			let targetVisible = true;
 		    } else {
@@ -739,9 +808,9 @@ class Walls {
 		}
 	    }
 
-
 	    // Move on to the next pixel
 	    let pixel = pixel + 1;
+
 	} // While pixel 
 	
 	return;

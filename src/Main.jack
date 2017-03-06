@@ -27,6 +27,7 @@ class Main {
 	var boolean exit, win, moved, pistolFired, sightFired;
 	var int bullet, steps, targets, i;
 	var String endText, scoreText;
+	var int stepDelta;
 
 	// ... Variables storing bitmaps
 	var int sc, sf, pc, pf;
@@ -52,6 +53,7 @@ class Main {
 	let moved = true;          /* only updates the display if an action took place */
 	let exit = false;          /* whether the game is over*/
 	let targets = 0;           /* how many targets have been destroyed */
+	let stepDelta = 1;         /* number of steps to take at a time */
 	let steps = 1000;          /* number of actions remaining */
 	let bullet = 0;            /* whether pistol fired, where the bullet is */
 	let pistolFired = false;   /* which version of the pistol to render */
@@ -68,19 +70,19 @@ class Main {
 	    }
 	    // Forward (up-arrow)
 	    if (key = 131) {
-		do Player.reLocate(2);
+		do Player.reLocate(stepDelta);
 		let moved = true; }
 	    // Backward (down-arrow)
 	    if (key = 133) {
-		do Player.reLocate(-2);
+		do Player.reLocate(-stepDelta);
 		let moved = true; }
 	    // Rotate left (left-arrow)
 	    if (key = 130) {
-		do Player.reOrient(-2);
+		do Player.reOrient(-stepDelta);
 		let moved = true; }
 	    // Rotate right (right-arrow)
 	    if (key = 132) {
-		do Player.reOrient(2);
+		do Player.reOrient(stepDelta);
 		let moved = true;
 	    }
 
@@ -92,14 +94,14 @@ class Main {
 		    let bullet = bullet - 1;
 		}
 
-		// Ttest if a target was hit
-		if ((bullet = 1) & (Walls.targetInSight())) {
+		// Test if a target was hit
+		if ((bullet = 2) & (Walls.targetInSight())) {
 		    let targets = targets + 1;
 		    do Walls.untarget();
 		}
 
 		// Show bullet hitting the wall
-		if (bullet = 2) {
+		if (bullet = 3) {
 		    let sightFired = true;
 		} else {
 		    let sightFired = false;
@@ -122,7 +124,7 @@ class Main {
 		
 		// Update the number of steps taken and check whether
 		// you ran out of actions
-		let steps = steps -2;
+		let steps = steps - stepDelta;
 		if (steps = 0) {
 		    let exit = true;
 		    let win = false;

@@ -1,0 +1,525 @@
+function Main.main 20
+push constant 256
+call Array.new 1
+pop local 0
+push constant 256
+call Array.new 1
+pop local 1
+push constant 7
+call Array.new 1
+pop local 2
+call Walls.init 0
+pop temp 0
+push constant 3
+push constant 32
+push constant 0
+push constant 6
+push constant 0
+call Walls.paths 0
+call Player.init 6
+pop temp 0
+call Display.init 0
+pop temp 0
+call Display.sc 0
+pop local 16
+call Display.sf 0
+pop local 17
+call Display.pc 0
+pop local 18
+call Display.pf 0
+pop local 19
+push constant 0
+pop local 3
+push constant 0
+not
+pop local 6
+push constant 0
+pop local 4
+push constant 0
+pop local 11
+push constant 1
+pop local 15
+push constant 1000
+pop local 10
+push constant 0
+pop local 9
+push constant 0
+pop local 7
+push constant 0
+pop local 8
+label WHILE_EXP0
+push local 4
+not
+not
+if-goto WHILE_END0
+push local 3
+push constant 32
+eq
+push local 9
+push constant 0
+eq
+and
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 4
+pop local 9
+push constant 0
+not
+pop local 6
+label IF_FALSE0
+push local 3
+push constant 131
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push local 15
+call Player.reLocate 1
+pop temp 0
+push constant 0
+not
+pop local 6
+label IF_FALSE1
+push local 3
+push constant 133
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push local 15
+neg
+call Player.reLocate 1
+pop temp 0
+push constant 0
+not
+pop local 6
+label IF_FALSE2
+push local 3
+push constant 130
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push local 15
+neg
+call Player.reOrient 1
+pop temp 0
+push constant 0
+not
+pop local 6
+label IF_FALSE3
+push local 3
+push constant 132
+eq
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push local 15
+call Player.reOrient 1
+pop temp 0
+push constant 0
+not
+pop local 6
+label IF_FALSE4
+push local 6
+push local 9
+push constant 0
+gt
+or
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push local 9
+push constant 0
+gt
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push local 9
+push constant 1
+sub
+pop local 9
+label IF_FALSE6
+push local 9
+push constant 2
+eq
+call Walls.targetInSight 0
+and
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push local 11
+push constant 1
+add
+pop local 11
+call Walls.untarget 0
+pop temp 0
+label IF_FALSE7
+push local 9
+push constant 3
+eq
+if-goto IF_TRUE8
+goto IF_FALSE8
+label IF_TRUE8
+push constant 0
+not
+pop local 8
+goto IF_END8
+label IF_FALSE8
+push constant 0
+pop local 8
+label IF_END8
+push local 9
+push constant 0
+gt
+if-goto IF_TRUE9
+goto IF_FALSE9
+label IF_TRUE9
+push constant 0
+not
+pop local 7
+goto IF_END9
+label IF_FALSE9
+push constant 0
+pop local 7
+label IF_END9
+push local 11
+push constant 2
+gt
+call Player.roomNum 0
+call Walls.atExit 1
+and
+if-goto IF_TRUE10
+goto IF_FALSE10
+label IF_TRUE10
+push constant 0
+not
+pop local 4
+push constant 0
+not
+pop local 5
+label IF_FALSE10
+push local 10
+push local 15
+sub
+pop local 10
+push local 10
+push constant 0
+eq
+if-goto IF_TRUE11
+goto IF_FALSE11
+label IF_TRUE11
+push constant 0
+not
+pop local 4
+push constant 0
+pop local 5
+label IF_FALSE11
+push local 2
+call Player.getLocation 1
+pop temp 0
+push local 2
+push local 0
+push local 1
+call Walls.generate 3
+pop temp 0
+push local 0
+push local 1
+call Display.walls 2
+pop temp 0
+push local 8
+if-goto IF_TRUE12
+goto IF_FALSE12
+label IF_TRUE12
+push local 17
+push constant 32
+push constant 2
+push constant 3855
+call Display.bitmap 4
+pop temp 0
+goto IF_END12
+label IF_FALSE12
+push local 16
+push constant 32
+push constant 2
+push constant 3855
+call Display.bitmap 4
+pop temp 0
+label IF_END12
+push local 7
+if-goto IF_TRUE13
+goto IF_FALSE13
+label IF_TRUE13
+push local 19
+push constant 256
+push constant 4
+push constant 6160
+call Display.bitmap 4
+pop temp 0
+goto IF_END13
+label IF_FALSE13
+push local 18
+push constant 256
+push constant 4
+push constant 6160
+call Display.bitmap 4
+pop temp 0
+label IF_END13
+push local 11
+push local 10
+call Display.scores 2
+pop temp 0
+label IF_FALSE5
+push constant 0
+pop local 6
+call Keyboard.keyPressed 0
+pop local 3
+push local 3
+push constant 81
+eq
+push local 3
+push constant 113
+eq
+or
+if-goto IF_TRUE14
+goto IF_FALSE14
+label IF_TRUE14
+push constant 0
+not
+pop local 4
+label IF_FALSE14
+goto WHILE_EXP0
+label WHILE_END0
+call Screen.clearScreen 0
+pop temp 0
+push local 10
+push constant 0
+gt
+push local 11
+push constant 2
+gt
+and
+if-goto IF_TRUE15
+goto IF_FALSE15
+label IF_TRUE15
+push constant 5
+call String.new 1
+pop local 14
+push local 14
+push local 10
+call String.setInt 2
+pop temp 0
+push constant 10
+call String.new 1
+pop local 13
+push local 13
+push constant 83
+call String.appendChar 2
+pop temp 0
+push local 13
+push constant 99
+call String.appendChar 2
+pop temp 0
+push local 13
+push constant 111
+call String.appendChar 2
+pop temp 0
+push local 13
+push constant 114
+call String.appendChar 2
+pop temp 0
+push local 13
+push constant 101
+call String.appendChar 2
+pop temp 0
+push local 13
+push constant 32
+call String.appendChar 2
+pop temp 0
+push constant 0
+pop local 12
+label WHILE_EXP1
+push local 12
+push local 14
+call String.length 1
+lt
+not
+if-goto WHILE_END1
+push local 13
+push local 14
+push local 12
+call String.charAt 2
+call String.appendChar 2
+pop temp 0
+push local 12
+push constant 1
+add
+pop local 12
+goto WHILE_EXP1
+label WHILE_END1
+push constant 11
+call String.new 1
+push constant 89
+call String.appendChar 2
+push constant 79
+call String.appendChar 2
+push constant 85
+call String.appendChar 2
+push constant 32
+call String.appendChar 2
+push constant 69
+call String.appendChar 2
+push constant 83
+call String.appendChar 2
+push constant 67
+call String.appendChar 2
+push constant 65
+call String.appendChar 2
+push constant 80
+call String.appendChar 2
+push constant 69
+call String.appendChar 2
+push constant 68
+call String.appendChar 2
+push local 13
+call Display.splash_screen 2
+pop temp 0
+push local 14
+call String.dispose 1
+pop temp 0
+push local 13
+call String.dispose 1
+pop temp 0
+goto IF_END15
+label IF_FALSE15
+push constant 5
+call String.new 1
+pop local 14
+push local 14
+push local 11
+call String.setInt 2
+pop temp 0
+push constant 10
+call String.new 1
+pop local 13
+push local 13
+push constant 72
+call String.appendChar 2
+pop temp 0
+push local 13
+push constant 105
+call String.appendChar 2
+pop temp 0
+push local 13
+push constant 116
+call String.appendChar 2
+pop temp 0
+push local 13
+push constant 115
+call String.appendChar 2
+pop temp 0
+push local 13
+push constant 32
+call String.appendChar 2
+pop temp 0
+push constant 0
+pop local 12
+label WHILE_EXP2
+push local 12
+push local 14
+call String.length 1
+lt
+not
+if-goto WHILE_END2
+push local 13
+push local 14
+push local 12
+call String.charAt 2
+call String.appendChar 2
+pop temp 0
+push local 12
+push constant 1
+add
+pop local 12
+goto WHILE_EXP2
+label WHILE_END2
+push constant 9
+call String.new 1
+push constant 71
+call String.appendChar 2
+push constant 65
+call String.appendChar 2
+push constant 77
+call String.appendChar 2
+push constant 69
+call String.appendChar 2
+push constant 32
+call String.appendChar 2
+push constant 79
+call String.appendChar 2
+push constant 86
+call String.appendChar 2
+push constant 69
+call String.appendChar 2
+push constant 82
+call String.appendChar 2
+push local 13
+call Display.splash_screen 2
+pop temp 0
+push local 14
+call String.dispose 1
+pop temp 0
+push local 13
+call String.dispose 1
+pop temp 0
+label IF_END15
+label WHILE_EXP3
+push local 3
+push constant 0
+eq
+not
+not
+if-goto WHILE_END3
+call Keyboard.keyPressed 0
+pop local 3
+goto WHILE_EXP3
+label WHILE_END3
+label WHILE_EXP4
+push local 3
+push constant 32
+eq
+not
+push local 3
+push constant 81
+eq
+not
+and
+push local 3
+push constant 113
+eq
+not
+and
+not
+if-goto WHILE_END4
+call Keyboard.keyPressed 0
+pop local 3
+goto WHILE_EXP4
+label WHILE_END4
+push local 0
+call Array.dispose 1
+pop temp 0
+push local 1
+call Array.dispose 1
+pop temp 0
+push local 2
+call Array.dispose 1
+pop temp 0
+call Walls.cleanup 0
+pop temp 0
+call Display.cleanup 0
+pop temp 0
+call Player.cleanup 0
+pop temp 0
+push constant 0
+return
