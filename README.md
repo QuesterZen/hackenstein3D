@@ -1,5 +1,3 @@
-# hackenstein3D
-
 HACKENSTEIN 3D - Escape from Castle Hackenstein, Part II
 --------------------------------------------------------
 
@@ -25,7 +23,7 @@ Use the Arrow Keys to move around. And the Space Bar to shoot.
 To quit the game, press Q.
 
 To win the game, you need to shoot all three targets and reach the
-exit. You have 1000 "actions" to do this. Moving and turning take a action
+exit. You have 1000 "actions" to do this. Moving and turning take one action
 each; shooting takes 4 actions but you can move at the same time without
 additional cost.
 
