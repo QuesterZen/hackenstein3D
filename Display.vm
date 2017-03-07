@@ -163,16 +163,12 @@ pop static 45
 push constant 256
 pop static 46
 push local 0
-push constant 0
-add
 push argument 1
 add
 pop pointer 1
 push that 0
 pop static 47
 push local 0
-push constant 0
-add
 push argument 0
 add
 pop pointer 1
@@ -291,176 +287,112 @@ pop pointer 1
 push that 0
 pop static 62
 push static 47
-push constant 7
-push static 0
-add
-pop pointer 1
-push that 0
+push constant 128
 and
 push constant 0
 eq
 not
 pop static 23
 push static 47
-push constant 8
-push static 0
-add
-pop pointer 1
-push that 0
+push constant 256
 and
 push constant 0
 eq
 not
 pop static 31
 push static 48
-push constant 7
-push static 0
-add
-pop pointer 1
-push that 0
+push constant 128
 and
 push constant 0
 eq
 not
 pop static 24
 push static 48
-push constant 8
-push static 0
-add
-pop pointer 1
-push that 0
+push constant 256
 and
 push constant 0
 eq
 not
 pop static 32
 push static 49
-push constant 7
-push static 0
-add
-pop pointer 1
-push that 0
+push constant 128
 and
 push constant 0
 eq
 not
 pop static 25
 push static 49
-push constant 8
-push static 0
-add
-pop pointer 1
-push that 0
+push constant 256
 and
 push constant 0
 eq
 not
 pop static 33
 push static 50
-push constant 7
-push static 0
-add
-pop pointer 1
-push that 0
+push constant 128
 and
 push constant 0
 eq
 not
 pop static 26
 push static 50
-push constant 8
-push static 0
-add
-pop pointer 1
-push that 0
+push constant 256
 and
 push constant 0
 eq
 not
 pop static 34
 push static 51
-push constant 7
-push static 0
-add
-pop pointer 1
-push that 0
+push constant 128
 and
 push constant 0
 eq
 not
 pop static 27
 push static 51
-push constant 8
-push static 0
-add
-pop pointer 1
-push that 0
+push constant 256
 and
 push constant 0
 eq
 not
 pop static 35
 push static 52
-push constant 7
-push static 0
-add
-pop pointer 1
-push that 0
+push constant 128
 and
 push constant 0
 eq
 not
 pop static 28
 push static 52
-push constant 8
-push static 0
-add
-pop pointer 1
-push that 0
+push constant 256
 and
 push constant 0
 eq
 not
 pop static 36
 push static 53
-push constant 7
-push static 0
-add
-pop pointer 1
-push that 0
+push constant 128
 and
 push constant 0
 eq
 not
 pop static 29
 push static 53
-push constant 8
-push static 0
-add
-pop pointer 1
-push that 0
+push constant 256
 and
 push constant 0
 eq
 not
 pop static 37
 push static 54
-push constant 7
-push static 0
-add
-pop pointer 1
-push that 0
+push constant 128
 and
 push constant 0
 eq
 not
 pop static 30
 push static 54
-push constant 8
-push static 0
-add
-pop pointer 1
-push that 0
+push constant 256
 and
 push constant 0
 eq
