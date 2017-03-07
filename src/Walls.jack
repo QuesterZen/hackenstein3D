@@ -31,6 +31,480 @@ class Walls {
 	// Target Variable initialisation
 	let targetVisible = false;
 
+	do Walls.setupTrigTables();
+
+	// Define the locations and textures of walls in the EW direction
+	// 0 is no Wall, 3 is the target wall, n-1 is pattern index, -n means facing in the opposite direction
+	let xWalls = Array.new(72);
+	let xWalls[0] = 1; let xWalls[1] = 1; let xWalls[2] = 5; let xWalls[3] = 1; let xWalls[4] = 1; let xWalls[5] = 1; let xWalls[6] = 1; let xWalls[7] = 1; 
+	let xWalls[8] = 0; let xWalls[9] = 3; let xWalls[10] = 2; let xWalls[11] = 0; let xWalls[12] = 2; let xWalls[13] = 0; let xWalls[14] = 0; let xWalls[15] = 0; 
+	let xWalls[16] = 0; let xWalls[17] = 0; let xWalls[18] = 0; let xWalls[19] = 0; let xWalls[20] = 0; let xWalls[21] = 0; let xWalls[22] = 2; let xWalls[23] = 0; 
+	let xWalls[24] = 0; let xWalls[25] = 0; let xWalls[26] = 2; let xWalls[27] = 0; let xWalls[28] = 0; let xWalls[29] = 3; let xWalls[30] = 0; let xWalls[31] = 2; 
+	let xWalls[32] = 0; let xWalls[33] = 2; let xWalls[34] = 0; let xWalls[35] = 0; let xWalls[36] = 0; let xWalls[37] = 0; let xWalls[38] = 0; let xWalls[39] = 3; 
+	let xWalls[40] = 0; let xWalls[41] = 0; let xWalls[42] = 0; let xWalls[43] = 0; let xWalls[44] = 2; let xWalls[45] = 2; let xWalls[46] = 0; let xWalls[47] = 0; 
+	let xWalls[48] = 2; let xWalls[49] = 0; let xWalls[50] = 0; let xWalls[51] = 0; let xWalls[52] = 2; let xWalls[53] = 2; let xWalls[54] = 2; let xWalls[55] = 2; 
+	let xWalls[56] = 0; let xWalls[57] = 2; let xWalls[58] = 0; let xWalls[59] = 0; let xWalls[60] = 2; let xWalls[61] = 2; let xWalls[62] = 2; let xWalls[63] = 0; 
+	let xWalls[64] = 1; let xWalls[65] = 1; let xWalls[66] = 1; let xWalls[67] = -4; let xWalls[68] = 1; let xWalls[69] = 1; let xWalls[70] = 1; let xWalls[71] = 1; 
+
+	// Define the locations and textures of walls in the NS direction
+	// 0 is no Wall, 3 is the target wall, n-1 is pattern index, -n means facing in the opposite direction
+	let yWalls = Array.new(72);
+	let yWalls[0] = 1; let yWalls[1] = 1; let yWalls[2] = 1; let yWalls[3] = 1; let yWalls[4] = 1; let yWalls[5] = 1; let yWalls[6] = 1; let yWalls[7] = -4; 
+	let yWalls[8] = 0; let yWalls[9] = 2; let yWalls[10] = 2; let yWalls[11] = 2; let yWalls[12] = 0; let yWalls[13] = 2; let yWalls[14] = 0; let yWalls[15] = 0; 
+	let yWalls[16] = 0; let yWalls[17] = 2; let yWalls[18] = 2; let yWalls[19] = 0; let yWalls[20] = 2; let yWalls[21] = 2; let yWalls[22] = 2; let yWalls[23] = 0; 
+	let yWalls[24] = 2; let yWalls[25] = 0; let yWalls[26] = 0; let yWalls[27] = 2; let yWalls[28] = 2; let yWalls[29] = 2; let yWalls[30] = 2; let yWalls[31] = 0; 
+	let yWalls[32] = 2; let yWalls[33] = 0; let yWalls[34] = 0; let yWalls[35] = 0; let yWalls[36] = 0; let yWalls[37] = 0; let yWalls[38] = 2; let yWalls[39] = 0; 
+	let yWalls[40] = 0; let yWalls[41] = 2; let yWalls[42] = 2; let yWalls[43] = 0; let yWalls[44] = 0; let yWalls[45] = 0; let yWalls[46] = 0; let yWalls[47] = 0; 
+	let yWalls[48] = 0; let yWalls[49] = 0; let yWalls[50] = 0; let yWalls[51] = 2; let yWalls[52] = 2; let yWalls[53] = 0; let yWalls[54] = 0; let yWalls[55] = 0; 
+	let yWalls[56] = 0; let yWalls[57] = 0; let yWalls[58] = 2; let yWalls[59] = 0; let yWalls[60] = 2; let yWalls[61] = 0; let yWalls[62] = 0; let yWalls[63] = 0; 
+	let yWalls[64] = 1; let yWalls[65] = 1; let yWalls[66] = 1; let yWalls[67] = 1; let yWalls[68] = 1; let yWalls[69] = -4; let yWalls[70] = 1; let yWalls[71] = 1; 
+
+	// 64 Rooms (xRoom + yRoom8) with 4 directions from each 0,1,2,3=NSWE
+	// true means you can pass in this direction, false means there is a wall in the way
+	let allowedPaths = Array.new(256);
+	let allowedPaths[0] = true; let allowedPaths[1] = false; let allowedPaths[2] = false; let allowedPaths[3] = true; 
+	let allowedPaths[4] = false; let allowedPaths[5] = false; let allowedPaths[6] = true; let allowedPaths[7] = true; 
+	let allowedPaths[8] = false; let allowedPaths[9] = false; let allowedPaths[10] = true; let allowedPaths[11] = false; 
+	let allowedPaths[12] = true; let allowedPaths[13] = false; let allowedPaths[14] = false; let allowedPaths[15] = false; 
+	let allowedPaths[16] = false; let allowedPaths[17] = false; let allowedPaths[18] = false; let allowedPaths[19] = true; 
+	let allowedPaths[20] = true; let allowedPaths[21] = false; let allowedPaths[22] = true; let allowedPaths[23] = true; 
+	let allowedPaths[24] = true; let allowedPaths[25] = false; let allowedPaths[26] = true; let allowedPaths[27] = true; 
+	let allowedPaths[28] = true; let allowedPaths[29] = false; let allowedPaths[30] = true; let allowedPaths[31] = false; 
+	let allowedPaths[32] = true; let allowedPaths[33] = true; let allowedPaths[34] = false; let allowedPaths[35] = false; 
+	let allowedPaths[36] = true; let allowedPaths[37] = false; let allowedPaths[38] = false; let allowedPaths[39] = false; 
+	let allowedPaths[40] = true; let allowedPaths[41] = false; let allowedPaths[42] = false; let allowedPaths[43] = true; 
+	let allowedPaths[44] = true; let allowedPaths[45] = true; let allowedPaths[46] = true; let allowedPaths[47] = true; 
+	let allowedPaths[48] = true; let allowedPaths[49] = false; let allowedPaths[50] = true; let allowedPaths[51] = false; 
+	let allowedPaths[52] = true; let allowedPaths[53] = true; let allowedPaths[54] = false; let allowedPaths[55] = true; 
+	let allowedPaths[56] = false; let allowedPaths[57] = true; let allowedPaths[58] = true; let allowedPaths[59] = true; 
+	let allowedPaths[60] = true; let allowedPaths[61] = true; let allowedPaths[62] = true; let allowedPaths[63] = false; 
+	let allowedPaths[64] = true; let allowedPaths[65] = true; let allowedPaths[66] = false; let allowedPaths[67] = false; 
+	let allowedPaths[68] = true; let allowedPaths[69] = true; let allowedPaths[70] = false; let allowedPaths[71] = false; 
+	let allowedPaths[72] = false; let allowedPaths[73] = true; let allowedPaths[74] = false; let allowedPaths[75] = true; 
+	let allowedPaths[76] = true; let allowedPaths[77] = true; let allowedPaths[78] = true; let allowedPaths[79] = true; 
+	let allowedPaths[80] = true; let allowedPaths[81] = true; let allowedPaths[82] = true; let allowedPaths[83] = false; 
+	let allowedPaths[84] = false; let allowedPaths[85] = true; let allowedPaths[86] = false; let allowedPaths[87] = true; 
+	let allowedPaths[88] = true; let allowedPaths[89] = false; let allowedPaths[90] = true; let allowedPaths[91] = false; 
+	let allowedPaths[92] = false; let allowedPaths[93] = true; let allowedPaths[94] = false; let allowedPaths[95] = false; 
+	let allowedPaths[96] = true; let allowedPaths[97] = true; let allowedPaths[98] = false; let allowedPaths[99] = false; 
+	let allowedPaths[100] = false; let allowedPaths[101] = true; let allowedPaths[102] = false; let allowedPaths[103] = true; 
+	let allowedPaths[104] = true; let allowedPaths[105] = false; let allowedPaths[106] = true; let allowedPaths[107] = false; 
+	let allowedPaths[108] = true; let allowedPaths[109] = true; let allowedPaths[110] = false; let allowedPaths[111] = true; 
+	let allowedPaths[112] = true; let allowedPaths[113] = true; let allowedPaths[114] = true; let allowedPaths[115] = true; 
+	let allowedPaths[116] = true; let allowedPaths[117] = false; let allowedPaths[118] = true; let allowedPaths[119] = false; 
+	let allowedPaths[120] = true; let allowedPaths[121] = true; let allowedPaths[122] = false; let allowedPaths[123] = true; 
+	let allowedPaths[124] = false; let allowedPaths[125] = false; let allowedPaths[126] = true; let allowedPaths[127] = false; 
+	let allowedPaths[128] = true; let allowedPaths[129] = true; let allowedPaths[130] = false; let allowedPaths[131] = true; 
+	let allowedPaths[132] = true; let allowedPaths[133] = false; let allowedPaths[134] = true; let allowedPaths[135] = false; 
+	let allowedPaths[136] = true; let allowedPaths[137] = true; let allowedPaths[138] = false; let allowedPaths[139] = false; 
+	let allowedPaths[140] = true; let allowedPaths[141] = true; let allowedPaths[142] = false; let allowedPaths[143] = true; 
+	let allowedPaths[144] = false; let allowedPaths[145] = true; let allowedPaths[146] = true; let allowedPaths[147] = true; 
+	let allowedPaths[148] = false; let allowedPaths[149] = true; let allowedPaths[150] = true; let allowedPaths[151] = false; 
+	let allowedPaths[152] = true; let allowedPaths[153] = true; let allowedPaths[154] = false; let allowedPaths[155] = false; 
+	let allowedPaths[156] = true; let allowedPaths[157] = false; let allowedPaths[158] = false; let allowedPaths[159] = false; 
+	let allowedPaths[160] = false; let allowedPaths[161] = true; let allowedPaths[162] = false; let allowedPaths[163] = false; 
+	let allowedPaths[164] = true; let allowedPaths[165] = true; let allowedPaths[166] = false; let allowedPaths[167] = false; 
+	let allowedPaths[168] = true; let allowedPaths[169] = true; let allowedPaths[170] = false; let allowedPaths[171] = false; 
+	let allowedPaths[172] = true; let allowedPaths[173] = true; let allowedPaths[174] = false; let allowedPaths[175] = true; 
+	let allowedPaths[176] = false; let allowedPaths[177] = false; let allowedPaths[178] = true; let allowedPaths[179] = true; 
+	let allowedPaths[180] = false; let allowedPaths[181] = false; let allowedPaths[182] = true; let allowedPaths[183] = true; 
+	let allowedPaths[184] = false; let allowedPaths[185] = true; let allowedPaths[186] = true; let allowedPaths[187] = true; 
+	let allowedPaths[188] = false; let allowedPaths[189] = true; let allowedPaths[190] = true; let allowedPaths[191] = false; 
+	let allowedPaths[192] = true; let allowedPaths[193] = false; let allowedPaths[194] = false; let allowedPaths[195] = true; 
+	let allowedPaths[196] = false; let allowedPaths[197] = true; let allowedPaths[198] = true; let allowedPaths[199] = false; 
+	let allowedPaths[200] = true; let allowedPaths[201] = true; let allowedPaths[202] = false; let allowedPaths[203] = false; 
+	let allowedPaths[204] = true; let allowedPaths[205] = true; let allowedPaths[206] = false; let allowedPaths[207] = false; 
+	let allowedPaths[208] = false; let allowedPaths[209] = false; let allowedPaths[210] = false; let allowedPaths[211] = true; 
+	let allowedPaths[212] = false; let allowedPaths[213] = false; let allowedPaths[214] = true; let allowedPaths[215] = true; 
+	let allowedPaths[216] = false; let allowedPaths[217] = false; let allowedPaths[218] = true; let allowedPaths[219] = true; 
+	let allowedPaths[220] = true; let allowedPaths[221] = false; let allowedPaths[222] = true; let allowedPaths[223] = false; 
+	let allowedPaths[224] = false; let allowedPaths[225] = true; let allowedPaths[226] = false; let allowedPaths[227] = true; 
+	let allowedPaths[228] = false; let allowedPaths[229] = false; let allowedPaths[230] = true; let allowedPaths[231] = true; 
+	let allowedPaths[232] = false; let allowedPaths[233] = true; let allowedPaths[234] = true; let allowedPaths[235] = true; 
+	let allowedPaths[236] = false; let allowedPaths[237] = true; let allowedPaths[238] = true; let allowedPaths[239] = true; 
+	let allowedPaths[240] = false; let allowedPaths[241] = false; let allowedPaths[242] = true; let allowedPaths[243] = true; 
+	let allowedPaths[244] = false; let allowedPaths[245] = false; let allowedPaths[246] = true; let allowedPaths[247] = true; 
+	let allowedPaths[248] = false; let allowedPaths[249] = false; let allowedPaths[250] = true; let allowedPaths[251] = true; 
+	let allowedPaths[252] = false; let allowedPaths[253] = true; let allowedPaths[254] = true; let allowedPaths[255] = false;
+
+	// Wall texture patterns
+	// 5 patterns starting at offsets 0, 16, 32, 48 and 64
+	// Each pattern consists of 16 vertical strips
+	// Each vertical stripe is binary coded pattern of 16 bits
+	let patterns = Array.new(80);
+	let patterns[0] = -1; let patterns[1] = -32767; let patterns[2] = -32743; let patterns[3] = -26567;
+	let patterns[4] = -26599; let patterns[5] = -32743; let patterns[6] = -31975; let patterns[7] = -30947;
+	let patterns[8] = -31975; let patterns[9] = -29951; let patterns[10] = -31999; let patterns[11] = -31871;
+	let patterns[12] = -31999; let patterns[13] = -32743; let patterns[14] = -32743; let patterns[15] = -24575; 
+	let patterns[16] = -1; let patterns[17] = -8191; let patterns[18] = -8167; let patterns[19] = -31975;
+	let patterns[20] = -31999; let patterns[21] = -32767; let patterns[22] = -32671; let patterns[23] = -32671;
+	let patterns[24] = -26623; let patterns[25] = -26623; let patterns[26] = -32755; let patterns[27] = -32755;
+	let patterns[28] = -32383; let patterns[29] = -32383; let patterns[30] = -32767; let patterns[31] = -32767; 
+	let patterns[32] = -1; let patterns[33] = -32767; let patterns[34] = -32767; let patterns[35] = -32767;
+	let patterns[36] = -32767; let patterns[37] = -32319; let patterns[38] = -31775; let patterns[39] = -30863;
+	let patterns[40] = -31183; let patterns[41] = -30863; let patterns[42] = -31775; let patterns[43] = -32319;
+	let patterns[44] = -32767; let patterns[45] = -32767; let patterns[46] = -32767; let patterns[47] = -32767; 
+	let patterns[48] = 1; let patterns[49] = 16257; let patterns[50] = 6385; let patterns[51] = 8161;
+	let patterns[52] = 3169; let patterns[53] = 20417; let patterns[54] = 26609; let patterns[55] = 32761;
+	let patterns[56] = 32765; let patterns[57] = 26589; let patterns[58] = 20429; let patterns[59] = 3177;
+	let patterns[60] = 8161; let patterns[61] = 6385; let patterns[62] = 16257; let patterns[63] = 1; 
+	let patterns[64] = -1; let patterns[65] = -32767; let patterns[66] = -32767; let patterns[67] = -32767;
+	let patterns[68] = -32767; let patterns[69] = -31; let patterns[70] = -1055; let patterns[71] = -31;
+	let patterns[72] = -31; let patterns[73] = -31; let patterns[74] = -31; let patterns[75] = -31;
+	let patterns[76] = -32767; let patterns[77] = -32767; let patterns[78] = -32767; let patterns[79] = -32767; 
+
+	return;
+    }
+
+    /** generating the visible wall buffers using a geometrical ray-casting algorithm */
+    function void generate(int playerLocation,
+			   int wallDistances, int wallPatterns) {
+
+	// A large number of integer variables are required
+	// Location of the player: room, 64ths within the room, 64ths from the origin
+	var int xRoom, xPos, xPlayer, yRoom, yPos, yPlayer;
+	
+	// Angles: theta is orientation, mu is the ray direction
+	// muQ1 and muSgn are used to compute the correct value from the table
+	// trigonometric functions are computed from the tables
+	var int theta, mu, muQ1, muSgn;
+	var int sinTh64, cosTh64, tanMu64, tanMu64D, cotMu64, cotMu64D;
+
+	// Integer overflow protection
+	var int maxDeltaX, maxDeltaY;
+
+	// Which pixel is being rendered
+	var int pixel;
+
+	// Location of the ray intercepts with the grid lines
+	var int direction, direction8, deltaX, deltaY, lineX, lineY, lineX8, lineY8;
+
+	// Data on the closest intercept with each set of gridlines
+	// v is NS direction, h is EW direction
+	var boolean found;
+	var int vtex, vwall, vwallLookup, vd, vseg;
+	var int htex, hwall, hwallLookup, hd, hseg;
+
+	// Unpack the player location and orientation data
+	let xRoom = playerLocation[0];
+	let xPos = playerLocation[1];
+	let yRoom = playerLocation[2];
+	let yPos = playerLocation[3];
+	let theta = playerLocation[4] * 64;
+	let cosTh64 = playerLocation[5];
+	let sinTh64 = playerLocation[6];
+	let xPlayer = xRoom * 64 + xPos;
+	let yPlayer = yRoom * 64 + yPos;
+
+	// Loop through each direction visible on the screen from
+	// notional pixel -128 (45 degrees left) to 128 (45 degrees right)
+	let pixel = 0;
+	while (pixel < 256) {
+
+	    // Get the trigonometric values for the ray passing through
+	    // the current screen pixel
+	    let mu = theta + atanTable[pixel];
+	    if (mu > 4095) { let mu = mu - 4096; }
+	    if (mu < 0) { let mu = mu + 4096; }
+
+	    if (mu < 1025) {
+		let muQ1 = mu; let muSgn = 1;
+	    } else {
+		if (mu < 2048) {
+		    let muQ1 = 2048 - mu; let muSgn = -1;
+		} else {
+		    if (mu < 3073) {
+			let muQ1 = mu - 2048; let muSgn = 1;
+		    } else {
+			let muQ1 = 4096 - mu; let muSgn = -1;
+		    }
+		}
+	    }
+
+	    // Lookup the angles to get the wall intercept multipliers
+	    if (muSgn = -1) {
+		let tanMu64 = -tanTable[muQ1];
+		let cotMu64 = -tanTable[1024-muQ1];
+	    } else {
+		let tanMu64 = tanTable[muQ1];
+		let cotMu64 = tanTable[1024-muQ1];
+	    }
+
+	    // Identify overflow limits (these can never produce a valid
+	    // intercept point)
+	    if (muQ1 > 942) {
+		let maxDeltaY = maxDelta[1024-muQ1];
+	    } else {
+		let maxDeltaY = 32767;
+	    }
+	    if (muQ1 < 81) {
+		let maxDeltaX = maxDelta[muQ1];
+	    } else {
+		let maxDeltaX = 32767;
+	    }
+
+	    // Calculate intercepts with the vertical grid lines until you hit a wall
+
+	    // Locate the first grid line intercept
+	    if (mu < 2048) {
+		let direction = 64;
+		let direction8 = 8;
+		let cotMu64D = cotMu64;
+		let lineX8 = (xRoom + 1) * 8;
+	    } else {
+		let direction = - 64;
+		let direction8 = - 8;
+		let cotMu64D = - cotMu64;
+		let lineX8 = xRoom * 8;
+	    }
+	    let lineX = lineX8 * 8;	    
+	    let deltaX = lineX - xPlayer;
+	    if (((-maxDeltaX) < deltaX) & (deltaX < maxDeltaX)) {
+
+		let deltaY = (cotMu64 * deltaX) / 64; /* Location of first intercept. SLOW */
+		let lineY = yPlayer + deltaY;
+
+		// Is it a wall?
+		if ((lineY > -1) & (lineY < 513)) {
+		    let vwall = lineY / 64;           /* SLOW */
+		    let vwallLookup = lineX8 + vwall;
+		    let vtex = yWalls[vwallLookup];
+		} else {
+		    // No intercept possible
+		    let vtex = 0;
+		    let lineX = 16384;
+		    let lineY = 16384;
+		}
+		
+		// Look for other intercepts
+		while ((vtex = 0) & (lineX < 513) & (lineX > -1)) {
+
+		    // Other intercepts are at integer multiples of 64*cot(mu)
+		    // after the initial grid intercept
+		    let deltaX = deltaX + direction;
+		    let lineX = lineX + direction;
+		    let lineX8 = lineX8 + direction8;
+		    let deltaY = deltaY + cotMu64D;
+		    let lineY = lineY + cotMu64D;
+		    
+		    // Is it a wall?
+		    if ((lineY > -1) & (lineY < 513)) {
+			let vwall = lineY / 64;           /* SLOW */
+			let vwallLookup = lineX8 + vwall;
+			let vtex = yWalls[vwallLookup];
+		    } else {
+			// No intercept possible
+			let vtex = 0;
+			let lineX = 16384;
+			let lineY = 16384;
+		    }
+		    
+		}
+		
+	    } else {
+		// No intercept possible
+		let vtex = 0;
+		let lineX = 16384;
+		let lineY = 16384;
+	    }
+
+	    // Calculate correct distance and segment if a hit was made
+	    if ((lineY < 513) & (lineY > -1)) {
+		
+		// The wall distance is measured parallel to the player's orientation
+		// and therefore requires a matrix rotation to calculate
+		let vd = ((sinTh64 * deltaX) + (cosTh64 * deltaY)) / 32; /* SLOW */
+		if (vd < 0) {
+		    let vd = 32767;
+		}
+		let vseg = (lineY & 63) / 4;
+
+	    } else {
+		let vd = 32767;
+		let vseg = 0;
+	    }
+
+	    // Calculate intercepts with the horizontal grid lines until you hit a wall
+
+	    // Locate the first grid line intercept
+	    if ((mu < 1024) | (mu > 3071)) {
+		let direction = 64;
+		let direction8 = 8;
+		let tanMu64D = tanMu64;
+		let lineY8 = (yRoom + 1) * 8;
+	    } else {
+		let direction = - 64;
+		let direction8 = - 8;
+		let tanMu64D = - tanMu64;
+		let lineY8 = yRoom * 8;
+	    }
+	    let lineY = lineY8 * 8;	    
+	    let deltaY = lineY - yPlayer;
+	    if (((-maxDeltaY) < deltaY) & (deltaY < maxDeltaY)) {
+
+		let deltaX = (tanMu64 * deltaY) / 64; /* Location of first intercept. SLOW */
+		let lineX = xPlayer + deltaX;
+
+		// Is it a wall?
+		if ((lineX > -1) & (lineX < 513)) {
+		    let hwall = lineX / 64;           /* SLOW */
+		    let hwallLookup = lineY8 + hwall;
+		    let htex = xWalls[hwallLookup];
+		} else {
+		    // No intercept possible
+		    let htex = 0;
+		    let lineX = 16384;
+		    let lineY = 16384;
+		}
+		
+		// Look for other intercepts
+		while ((htex = 0) & (lineY < 513) & (lineY > -1)) {
+
+		    // Other intercepts are at integer multiples of 64*cot(mu)
+		    // after the initial grid intercept
+		    let deltaY = deltaY + direction;
+		    let lineY = lineY + direction;
+		    let lineY8 = lineY8 + direction8;
+		    let deltaX = deltaX + tanMu64D;
+		    let lineX = lineX + tanMu64D;
+		    
+		    // Is it a wall?
+		    if ((lineX > -1) & (lineX < 513)) {
+			let hwall = lineX / 64;           /* SLOW */
+			let hwallLookup = lineY8 + hwall;
+			let htex = xWalls[hwallLookup];
+		    } else {
+			// No intercept possible
+			let htex = 0;
+			let lineX = 16384;
+			let lineY = 16384;
+		    }
+		    
+		}
+		
+	    } else {
+		// No intercept possible
+		let htex = 0;
+		let lineX = 16384;
+		let lineY = 16384;
+	    }
+
+	    // Calculate correct distance and segment if a hit was made
+	    if ((lineX < 513) & (lineX > -1)) {
+		
+		// The wall distance is measured parallel to the player's orientation
+		// and therefore requires a matrix rotation to calculate
+		let hd = ((sinTh64 * deltaX) + (cosTh64 * deltaY)) / 32; /* SLOW */
+		if (hd < 0) {
+		    let hd = 32767;
+		}
+		let hseg = (lineX & 63) / 4;
+
+	    } else {
+		let hd = 32767;
+		let hseg = 0;
+	    }
+
+
+	    // Which is closer, the vertical wall or horizontal wall?
+	    if (vd < hd) {
+
+		// Vertical wall is closer, pack the v-values into the buffer
+		let wallDistances[pixel] = vd;
+		if (vtex < 0) {
+		    let wallPatterns[pixel] = patterns[((-vtex) * 16) - (vseg + 1)];
+		} else {
+		    let wallPatterns[pixel] = patterns[(vtex * 16) + (vseg - 16)];
+		}
+		
+		// Is the target in sight?
+		if (pixel = 128) {
+		    let targetWallDirection = 0;
+		    let targetWallNum = vwallLookup;
+		    if ((vtex = 3) | (vtex = -3)) {
+			let targetVisible = true;
+		    } else {
+			let targetVisible = false;
+		    }
+		}
+		
+	    } else {
+		
+		// Horizontal wall is closer, pack the h-values into the buffer
+		let wallDistances[pixel] = hd;
+		if (htex < 0) {
+		    let wallPatterns[pixel] = patterns[((-htex) * 16) - (hseg + 1)];
+		} else {
+		    let wallPatterns[pixel] = patterns[(htex * 16) + (hseg - 16)];
+		}
+
+		// Is the target in sight?
+		if (pixel = 128) {
+		    let targetWallDirection = 0;
+		    let targetWallNum = hwallLookup;
+		    if ((htex = 3) | (htex = -3)) {
+			let targetVisible = true;
+		    } else {
+			let targetVisible = false;
+		    }
+		}
+	    }
+
+	    // Move on to the next pixel
+	    let pixel = pixel + 1;
+
+	} // While pixel 
+	
+	return;
+
+    }
+
+    /** Change the texture of a target wall that has been hit */
+    function void untarget() {
+	if (targetVisible) {
+	    if (targetWallDirection = 0) {
+		let xWalls[targetWallNum] = 2;
+	    } else {
+		let yWalls[targetWallNum] = 2;
+	    }
+	    let targetVisible = false;
+	}
+	return;
+    }
+
+    /** Get the allowed paths*/
+    function int paths() {
+	return allowedPaths;
+    }
+
+    /** Is the target visible? */
+    function boolean targetInSight() {
+	return targetVisible;
+    }
+
+    /** Is the player in the exit room? */
+    function boolean atExit(int playerRoom) {
+	if (playerRoom = exit) {
+	    return true;
+	} else {
+	    return false;
+	}
+    }
+    
+    /** Unallocate the maze arrays and lookup tables*/
+    function void cleanup() {
+	do xWalls.dispose();
+	do yWalls.dispose();
+	do allowedPaths.dispose();
+	do patterns.dispose();
+	do tanTable.dispose();
+	do atanTable.dispose();
+	do maxDelta.dispose();
+	return;
+    }
+
+    function void setupTrigTables() {
+	
 	// Setup the trigonometry tables
 	// The lookup angle is in 4096th of a circle, even at this level of detail, some
 	// visible glitches occur (eg. corners not joining)
@@ -391,473 +865,6 @@ class Walls {
 	let atanTable[248] = 491; let atanTable[249] = 494; let atanTable[250] = 496; let atanTable[251] = 499; 
 	let atanTable[252] = 502; let atanTable[253] = 504; let atanTable[254] = 507; let atanTable[255] = 509; 
 
-	// Define the locations and textures of walls in the EW direction
-	// 0 is no Wall, 3 is the target wall, n-1 is pattern index, -n means facing in the opposite direction
-	let xWalls = Array.new(72);
-	let xWalls[0] = 1; let xWalls[1] = 1; let xWalls[2] = 5; let xWalls[3] = 1; let xWalls[4] = 1; let xWalls[5] = 1; let xWalls[6] = 1; let xWalls[7] = 1; 
-	let xWalls[8] = 0; let xWalls[9] = 3; let xWalls[10] = 2; let xWalls[11] = 0; let xWalls[12] = 2; let xWalls[13] = 0; let xWalls[14] = 0; let xWalls[15] = 0; 
-	let xWalls[16] = 0; let xWalls[17] = 0; let xWalls[18] = 0; let xWalls[19] = 0; let xWalls[20] = 0; let xWalls[21] = 0; let xWalls[22] = 2; let xWalls[23] = 0; 
-	let xWalls[24] = 0; let xWalls[25] = 0; let xWalls[26] = 2; let xWalls[27] = 0; let xWalls[28] = 0; let xWalls[29] = 3; let xWalls[30] = 0; let xWalls[31] = 2; 
-	let xWalls[32] = 0; let xWalls[33] = 2; let xWalls[34] = 0; let xWalls[35] = 0; let xWalls[36] = 0; let xWalls[37] = 0; let xWalls[38] = 0; let xWalls[39] = 3; 
-	let xWalls[40] = 0; let xWalls[41] = 0; let xWalls[42] = 0; let xWalls[43] = 0; let xWalls[44] = 2; let xWalls[45] = 2; let xWalls[46] = 0; let xWalls[47] = 0; 
-	let xWalls[48] = 2; let xWalls[49] = 0; let xWalls[50] = 0; let xWalls[51] = 0; let xWalls[52] = 2; let xWalls[53] = 2; let xWalls[54] = 2; let xWalls[55] = 2; 
-	let xWalls[56] = 0; let xWalls[57] = 2; let xWalls[58] = 0; let xWalls[59] = 0; let xWalls[60] = 2; let xWalls[61] = 2; let xWalls[62] = 2; let xWalls[63] = 0; 
-	let xWalls[64] = 1; let xWalls[65] = 1; let xWalls[66] = 1; let xWalls[67] = -4; let xWalls[68] = 1; let xWalls[69] = 1; let xWalls[70] = 1; let xWalls[71] = 1; 
-
-	// Define the locations and textures of walls in the NS direction
-	// 0 is no Wall, 3 is the target wall, n-1 is pattern index, -n means facing in the opposite direction
-	let yWalls = Array.new(72);
-	let yWalls[0] = 1; let yWalls[1] = 1; let yWalls[2] = 1; let yWalls[3] = 1; let yWalls[4] = 1; let yWalls[5] = 1; let yWalls[6] = 1; let yWalls[7] = -4; 
-	let yWalls[8] = 0; let yWalls[9] = 2; let yWalls[10] = 2; let yWalls[11] = 2; let yWalls[12] = 0; let yWalls[13] = 2; let yWalls[14] = 0; let yWalls[15] = 0; 
-	let yWalls[16] = 0; let yWalls[17] = 2; let yWalls[18] = 2; let yWalls[19] = 0; let yWalls[20] = 2; let yWalls[21] = 2; let yWalls[22] = 2; let yWalls[23] = 0; 
-	let yWalls[24] = 2; let yWalls[25] = 0; let yWalls[26] = 0; let yWalls[27] = 2; let yWalls[28] = 2; let yWalls[29] = 2; let yWalls[30] = 2; let yWalls[31] = 0; 
-	let yWalls[32] = 2; let yWalls[33] = 0; let yWalls[34] = 0; let yWalls[35] = 0; let yWalls[36] = 0; let yWalls[37] = 0; let yWalls[38] = 2; let yWalls[39] = 0; 
-	let yWalls[40] = 0; let yWalls[41] = 2; let yWalls[42] = 2; let yWalls[43] = 0; let yWalls[44] = 0; let yWalls[45] = 0; let yWalls[46] = 0; let yWalls[47] = 0; 
-	let yWalls[48] = 0; let yWalls[49] = 0; let yWalls[50] = 0; let yWalls[51] = 2; let yWalls[52] = 2; let yWalls[53] = 0; let yWalls[54] = 0; let yWalls[55] = 0; 
-	let yWalls[56] = 0; let yWalls[57] = 0; let yWalls[58] = 2; let yWalls[59] = 0; let yWalls[60] = 2; let yWalls[61] = 0; let yWalls[62] = 0; let yWalls[63] = 0; 
-	let yWalls[64] = 1; let yWalls[65] = 1; let yWalls[66] = 1; let yWalls[67] = 1; let yWalls[68] = 1; let yWalls[69] = -4; let yWalls[70] = 1; let yWalls[71] = 1; 
-
-	// 64 Rooms (xRoom + yRoom8) with 4 directions from each 0,1,2,3=NSWE
-	// true means you can pass in this direction, false means there is a wall in the way
-	let allowedPaths = Array.new(256);
-	let allowedPaths[0] = true; let allowedPaths[1] = false; let allowedPaths[2] = false; let allowedPaths[3] = true; 
-	let allowedPaths[4] = false; let allowedPaths[5] = false; let allowedPaths[6] = true; let allowedPaths[7] = true; 
-	let allowedPaths[8] = false; let allowedPaths[9] = false; let allowedPaths[10] = true; let allowedPaths[11] = false; 
-	let allowedPaths[12] = true; let allowedPaths[13] = false; let allowedPaths[14] = false; let allowedPaths[15] = false; 
-	let allowedPaths[16] = false; let allowedPaths[17] = false; let allowedPaths[18] = false; let allowedPaths[19] = true; 
-	let allowedPaths[20] = true; let allowedPaths[21] = false; let allowedPaths[22] = true; let allowedPaths[23] = true; 
-	let allowedPaths[24] = true; let allowedPaths[25] = false; let allowedPaths[26] = true; let allowedPaths[27] = true; 
-	let allowedPaths[28] = true; let allowedPaths[29] = false; let allowedPaths[30] = true; let allowedPaths[31] = false; 
-	let allowedPaths[32] = true; let allowedPaths[33] = true; let allowedPaths[34] = false; let allowedPaths[35] = false; 
-	let allowedPaths[36] = true; let allowedPaths[37] = false; let allowedPaths[38] = false; let allowedPaths[39] = false; 
-	let allowedPaths[40] = true; let allowedPaths[41] = false; let allowedPaths[42] = false; let allowedPaths[43] = true; 
-	let allowedPaths[44] = true; let allowedPaths[45] = true; let allowedPaths[46] = true; let allowedPaths[47] = true; 
-	let allowedPaths[48] = true; let allowedPaths[49] = false; let allowedPaths[50] = true; let allowedPaths[51] = false; 
-	let allowedPaths[52] = true; let allowedPaths[53] = true; let allowedPaths[54] = false; let allowedPaths[55] = true; 
-	let allowedPaths[56] = false; let allowedPaths[57] = true; let allowedPaths[58] = true; let allowedPaths[59] = true; 
-	let allowedPaths[60] = true; let allowedPaths[61] = true; let allowedPaths[62] = true; let allowedPaths[63] = false; 
-	let allowedPaths[64] = true; let allowedPaths[65] = true; let allowedPaths[66] = false; let allowedPaths[67] = false; 
-	let allowedPaths[68] = true; let allowedPaths[69] = true; let allowedPaths[70] = false; let allowedPaths[71] = false; 
-	let allowedPaths[72] = false; let allowedPaths[73] = true; let allowedPaths[74] = false; let allowedPaths[75] = true; 
-	let allowedPaths[76] = true; let allowedPaths[77] = true; let allowedPaths[78] = true; let allowedPaths[79] = true; 
-	let allowedPaths[80] = true; let allowedPaths[81] = true; let allowedPaths[82] = true; let allowedPaths[83] = false; 
-	let allowedPaths[84] = false; let allowedPaths[85] = true; let allowedPaths[86] = false; let allowedPaths[87] = true; 
-	let allowedPaths[88] = true; let allowedPaths[89] = false; let allowedPaths[90] = true; let allowedPaths[91] = false; 
-	let allowedPaths[92] = false; let allowedPaths[93] = true; let allowedPaths[94] = false; let allowedPaths[95] = false; 
-	let allowedPaths[96] = true; let allowedPaths[97] = true; let allowedPaths[98] = false; let allowedPaths[99] = false; 
-	let allowedPaths[100] = false; let allowedPaths[101] = true; let allowedPaths[102] = false; let allowedPaths[103] = true; 
-	let allowedPaths[104] = true; let allowedPaths[105] = false; let allowedPaths[106] = true; let allowedPaths[107] = false; 
-	let allowedPaths[108] = true; let allowedPaths[109] = true; let allowedPaths[110] = false; let allowedPaths[111] = true; 
-	let allowedPaths[112] = true; let allowedPaths[113] = true; let allowedPaths[114] = true; let allowedPaths[115] = true; 
-	let allowedPaths[116] = true; let allowedPaths[117] = false; let allowedPaths[118] = true; let allowedPaths[119] = false; 
-	let allowedPaths[120] = true; let allowedPaths[121] = true; let allowedPaths[122] = false; let allowedPaths[123] = true; 
-	let allowedPaths[124] = false; let allowedPaths[125] = false; let allowedPaths[126] = true; let allowedPaths[127] = false; 
-	let allowedPaths[128] = true; let allowedPaths[129] = true; let allowedPaths[130] = false; let allowedPaths[131] = true; 
-	let allowedPaths[132] = true; let allowedPaths[133] = false; let allowedPaths[134] = true; let allowedPaths[135] = false; 
-	let allowedPaths[136] = true; let allowedPaths[137] = true; let allowedPaths[138] = false; let allowedPaths[139] = false; 
-	let allowedPaths[140] = true; let allowedPaths[141] = true; let allowedPaths[142] = false; let allowedPaths[143] = true; 
-	let allowedPaths[144] = false; let allowedPaths[145] = true; let allowedPaths[146] = true; let allowedPaths[147] = true; 
-	let allowedPaths[148] = false; let allowedPaths[149] = true; let allowedPaths[150] = true; let allowedPaths[151] = false; 
-	let allowedPaths[152] = true; let allowedPaths[153] = true; let allowedPaths[154] = false; let allowedPaths[155] = false; 
-	let allowedPaths[156] = true; let allowedPaths[157] = false; let allowedPaths[158] = false; let allowedPaths[159] = false; 
-	let allowedPaths[160] = false; let allowedPaths[161] = true; let allowedPaths[162] = false; let allowedPaths[163] = false; 
-	let allowedPaths[164] = true; let allowedPaths[165] = true; let allowedPaths[166] = false; let allowedPaths[167] = false; 
-	let allowedPaths[168] = true; let allowedPaths[169] = true; let allowedPaths[170] = false; let allowedPaths[171] = false; 
-	let allowedPaths[172] = true; let allowedPaths[173] = true; let allowedPaths[174] = false; let allowedPaths[175] = true; 
-	let allowedPaths[176] = false; let allowedPaths[177] = false; let allowedPaths[178] = true; let allowedPaths[179] = true; 
-	let allowedPaths[180] = false; let allowedPaths[181] = false; let allowedPaths[182] = true; let allowedPaths[183] = true; 
-	let allowedPaths[184] = false; let allowedPaths[185] = true; let allowedPaths[186] = true; let allowedPaths[187] = true; 
-	let allowedPaths[188] = false; let allowedPaths[189] = true; let allowedPaths[190] = true; let allowedPaths[191] = false; 
-	let allowedPaths[192] = true; let allowedPaths[193] = false; let allowedPaths[194] = false; let allowedPaths[195] = true; 
-	let allowedPaths[196] = false; let allowedPaths[197] = true; let allowedPaths[198] = true; let allowedPaths[199] = false; 
-	let allowedPaths[200] = true; let allowedPaths[201] = true; let allowedPaths[202] = false; let allowedPaths[203] = false; 
-	let allowedPaths[204] = true; let allowedPaths[205] = true; let allowedPaths[206] = false; let allowedPaths[207] = false; 
-	let allowedPaths[208] = false; let allowedPaths[209] = false; let allowedPaths[210] = false; let allowedPaths[211] = true; 
-	let allowedPaths[212] = false; let allowedPaths[213] = false; let allowedPaths[214] = true; let allowedPaths[215] = true; 
-	let allowedPaths[216] = false; let allowedPaths[217] = false; let allowedPaths[218] = true; let allowedPaths[219] = true; 
-	let allowedPaths[220] = true; let allowedPaths[221] = false; let allowedPaths[222] = true; let allowedPaths[223] = false; 
-	let allowedPaths[224] = false; let allowedPaths[225] = true; let allowedPaths[226] = false; let allowedPaths[227] = true; 
-	let allowedPaths[228] = false; let allowedPaths[229] = false; let allowedPaths[230] = true; let allowedPaths[231] = true; 
-	let allowedPaths[232] = false; let allowedPaths[233] = true; let allowedPaths[234] = true; let allowedPaths[235] = true; 
-	let allowedPaths[236] = false; let allowedPaths[237] = true; let allowedPaths[238] = true; let allowedPaths[239] = true; 
-	let allowedPaths[240] = false; let allowedPaths[241] = false; let allowedPaths[242] = true; let allowedPaths[243] = true; 
-	let allowedPaths[244] = false; let allowedPaths[245] = false; let allowedPaths[246] = true; let allowedPaths[247] = true; 
-	let allowedPaths[248] = false; let allowedPaths[249] = false; let allowedPaths[250] = true; let allowedPaths[251] = true; 
-	let allowedPaths[252] = false; let allowedPaths[253] = true; let allowedPaths[254] = true; let allowedPaths[255] = false;
-
-	// Wal texture patterns
-	// 5 patterns starting at offsets 0, 16, 32, 48 and 64
-	// Each pattern consists of 16 vertical strips
-	// Each vertical stripe is binary coded pattern of 16 bits
-	let patterns = Array.new(80);
-	let patterns[0] = -1; let patterns[1] = -32767; let patterns[2] = -32743; let patterns[3] = -26567;
-	let patterns[4] = -26599; let patterns[5] = -32743; let patterns[6] = -31975; let patterns[7] = -30947;
-	let patterns[8] = -31975; let patterns[9] = -29951; let patterns[10] = -31999; let patterns[11] = -31871;
-	let patterns[12] = -31999; let patterns[13] = -32743; let patterns[14] = -32743; let patterns[15] = -24575; 
-	let patterns[16] = -1; let patterns[17] = -8191; let patterns[18] = -8167; let patterns[19] = -31975;
-	let patterns[20] = -31999; let patterns[21] = -32767; let patterns[22] = -32671; let patterns[23] = -32671;
-	let patterns[24] = -26623; let patterns[25] = -26623; let patterns[26] = -32755; let patterns[27] = -32755;
-	let patterns[28] = -32383; let patterns[29] = -32383; let patterns[30] = -32767; let patterns[31] = -32767; 
-	let patterns[32] = -1; let patterns[33] = -32767; let patterns[34] = -32767; let patterns[35] = -32767;
-	let patterns[36] = -32767; let patterns[37] = -32319; let patterns[38] = -31775; let patterns[39] = -30863;
-	let patterns[40] = -31183; let patterns[41] = -30863; let patterns[42] = -31775; let patterns[43] = -32319;
-	let patterns[44] = -32767; let patterns[45] = -32767; let patterns[46] = -32767; let patterns[47] = -32767; 
-	let patterns[48] = 1; let patterns[49] = 16257; let patterns[50] = 6385; let patterns[51] = 8161;
-	let patterns[52] = 3169; let patterns[53] = 20417; let patterns[54] = 26609; let patterns[55] = 32761;
-	let patterns[56] = 32765; let patterns[57] = 26589; let patterns[58] = 20429; let patterns[59] = 3177;
-	let patterns[60] = 8161; let patterns[61] = 6385; let patterns[62] = 16257; let patterns[63] = 1; 
-	let patterns[64] = -1; let patterns[65] = -32767; let patterns[66] = -32767; let patterns[67] = -32767;
-	let patterns[68] = -32767; let patterns[69] = -31; let patterns[70] = -1055; let patterns[71] = -31;
-	let patterns[72] = -31; let patterns[73] = -31; let patterns[74] = -31; let patterns[75] = -31;
-	let patterns[76] = -32767; let patterns[77] = -32767; let patterns[78] = -32767; let patterns[79] = -32767; 
-
-	return;
-    }
-
-    /** generating the visible wall buffers using a geometrical ray-casting algorithm */
-    function void generate(int playerLocation,
-			   int wallDistances, int wallPatterns) {
-
-	// A large number of integer variables are required
-	// Location of the player: room, 64ths within the room, 64ths from the origin
-	var int xRoom, xPos, xPlayer, yRoom, yPos, yPlayer;
-	
-	// Angles: theta is orientation, mu is the ray direction
-	// muQ1 and muSgn are used to computer the correct value from the table
-	// trigonometric functions are computed from the tables
-	var int theta, mu, muQ1, muSgn;
-	var int sinTh64, cosTh64, tanMu64, tanMu64D, cotMu64, cotMu64D;
-
-	// Integer overflow protection
-	var int maxDeltaX, maxDeltaY;
-
-	// Which pixel is being rendered
-	var int pixel;
-
-	// Location of the ray intercepts with the grid lines
-	var int direction, direction8, deltaX, deltaY, lineX, lineY, lineX8, lineY8;
-
-	// Data on the closest intercept with each set of gridlines
-	// v is NS direction, h is EW direction
-	var boolean found;
-	var int vtex, vwall, vwallLookup, vd, vseg;
-	var int htex, hwall, hwallLookup, hd, hseg;
-
-	// Unpack the player location and orientation data
-	let xRoom = playerLocation[0];
-	let xPos = playerLocation[1];
-	let yRoom = playerLocation[2];
-	let yPos = playerLocation[3];
-	let theta = playerLocation[4] * 64;
-	let cosTh64 = playerLocation[5];
-	let sinTh64 = playerLocation[6];
-	let xPlayer = xRoom * 64 + xPos;
-	let yPlayer = yRoom * 64 + yPos;
-
-	// Loop through each direction visible on the screen from
-	// notional pixel -128 (45 degrees left) to 128 (45 degrees right)
-	let pixel = 0;
-	while (pixel < 256) {
-
-	    // Get the trigonometric values for the ray passing through
-	    // the current screen pixel
-	    let mu = theta + atanTable[pixel];
-	    if (mu > 4095) { let mu = mu - 4096; }
-	    if (mu < 0) { let mu = mu + 4096; }
-
-	    if (mu < 1025) {
-		let muQ1 = mu; let muSgn = 1;
-	    } else {
-		if (mu < 2048) {
-		    let muQ1 = 2048 - mu; let muSgn = -1;
-		} else {
-		    if (mu < 3073) {
-			let muQ1 = mu - 2048; let muSgn = 1;
-		    } else {
-			let muQ1 = 4096 - mu; let muSgn = -1;
-		    }
-		}
-	    }
-
-	    // Lookup the angles to get the wall intercept multipliers
-	    if (muSgn = -1) {
-		let tanMu64 = -tanTable[muQ1];
-		let cotMu64 = -tanTable[1024-muQ1];
-	    } else {
-		let tanMu64 = tanTable[muQ1];
-		let cotMu64 = tanTable[1024-muQ1];
-	    }
-
-	    // Identify overflow limits (these can never produce a valid
-	    // intercept point)
-	    if (muQ1 > 942) {
-		let maxDeltaY = maxDelta[1024-muQ1];
-	    } else {
-		let maxDeltaY = 32767;
-	    }
-	    if (muQ1 < 81) {
-		let maxDeltaX = maxDelta[muQ1];
-	    } else {
-		let maxDeltaX = 32767;
-	    }
-
-	    // Calculate intercepts with the vertical grid lines until you hit a wall
-
-	    // Locate the first grid line intercept
-	    if (mu < 2048) {
-		let direction = 64;
-		let direction8 = 8;
-		let cotMu64D = cotMu64;
-		let lineX8 = (xRoom + 1) * 8;
-	    } else {
-		let direction = - 64;
-		let direction8 = - 8;
-		let cotMu64D = - cotMu64;
-		let lineX8 = xRoom * 8;
-	    }
-	    let lineX = lineX8 * 8;	    
-	    let deltaX = lineX - xPlayer;
-	    if (((-maxDeltaX) < deltaX) & (deltaX < maxDeltaX)) {
-
-		let deltaY = (cotMu64 * deltaX) / 64; /* Location of first intercept. SLOW */
-		let lineY = yPlayer + deltaY;
-
-		// Is it a wall?
-		if ((lineY > -1) & (lineY < 513)) {
-		    let vwall = lineY / 64;           /* SLOW */
-		    let vwallLookup = lineX8 + vwall;
-		    let vtex = yWalls[vwallLookup];
-		} else {
-		    // No intercept possible
-		    let vtex = 0;
-		    let lineX = 16384;
-		    let lineY = 16384;
-		}
-		
-		// Look for other intercepts
-		while ((vtex = 0) & (lineX < 513) & (lineX > -1)) {
-
-		    // Other intercepts are at integer multiples of 64*cot(mu)
-		    // after the initial grid intercept
-		    let deltaX = deltaX + direction;
-		    let lineX = lineX + direction;
-		    let lineX8 = lineX8 + direction8;
-		    let deltaY = deltaY + cotMu64D;
-		    let lineY = lineY + cotMu64D;
-		    
-		    // Is it a wall?
-		    if ((lineY > -1) & (lineY < 513)) {
-			let vwall = lineY / 64;           /* SLOW */
-			let vwallLookup = lineX8 + vwall;
-			let vtex = yWalls[vwallLookup];
-		    } else {
-			// No intercept possible
-			let vtex = 0;
-			let lineX = 16384;
-			let lineY = 16384;
-		    }
-		    
-		}
-		
-	    } else {
-		// No intercept possible
-		let vtex = 0;
-		let lineX = 16384;
-		let lineY = 16384;
-	    }
-
-	    // Calculate correct distance and segment if a hit was made
-	    if ((lineY < 513) & (lineY > -1)) {
-		
-		// The wall distance is measured parallel to the player's orientation
-		// and therefore requires a matrix rotation to calculate
-		let vd = ((sinTh64 * deltaX) + (cosTh64 * deltaY)) / 32; /* SLOW */
-		if (vd < 0) {
-		    let vd = 32767;
-		}
-		let vseg = (lineY & 63) / 4;
-
-	    } else {
-		let vd = 32767;
-		let vseg = 0;
-	    }
-
-	    // Calculate intercepts with the horizontal grid lines until you hit a wall
-
-	    // Locate the first grid line intercept
-	    if ((mu < 1024) | (mu > 3071)) {
-		let direction = 64;
-		let direction8 = 8;
-		let tanMu64D = tanMu64;
-		let lineY8 = (yRoom + 1) * 8;
-	    } else {
-		let direction = - 64;
-		let direction8 = - 8;
-		let tanMu64D = - tanMu64;
-		let lineY8 = yRoom * 8;
-	    }
-	    let lineY = lineY8 * 8;	    
-	    let deltaY = lineY - yPlayer;
-	    if (((-maxDeltaY) < deltaY) & (deltaY < maxDeltaY)) {
-
-		let deltaX = (tanMu64 * deltaY) / 64; /* Location of first intercept. SLOW */
-		let lineX = xPlayer + deltaX;
-
-		// Is it a wall?
-		if ((lineX > -1) & (lineX < 513)) {
-		    let hwall = lineX / 64;           /* SLOW */
-		    let hwallLookup = lineY8 + hwall;
-		    let htex = xWalls[hwallLookup];
-		} else {
-		    // No intercept possible
-		    let htex = 0;
-		    let lineX = 16384;
-		    let lineY = 16384;
-		}
-		
-		// Look for other intercepts
-		while ((htex = 0) & (lineY < 513) & (lineY > -1)) {
-
-		    // Other intercepts are at integer multiples of 64*cot(mu)
-		    // after the initial grid intercept
-		    let deltaY = deltaY + direction;
-		    let lineY = lineY + direction;
-		    let lineY8 = lineY8 + direction8;
-		    let deltaX = deltaX + tanMu64D;
-		    let lineX = lineX + tanMu64D;
-		    
-		    // Is it a wall?
-		    if ((lineX > -1) & (lineX < 513)) {
-			let hwall = lineX / 64;           /* SLOW */
-			let hwallLookup = lineY8 + hwall;
-			let htex = xWalls[hwallLookup];
-		    } else {
-			// No intercept possible
-			let htex = 0;
-			let lineX = 16384;
-			let lineY = 16384;
-		    }
-		    
-		}
-		
-	    } else {
-		// No intercept possible
-		let htex = 0;
-		let lineX = 16384;
-		let lineY = 16384;
-	    }
-
-	    // Calculate correct distance and segment if a hit was made
-	    if ((lineX < 513) & (lineX > -1)) {
-		
-		// The wall distance is measured parallel to the player's orientation
-		// and therefore requires a matrix rotation to calculate
-		let hd = ((sinTh64 * deltaX) + (cosTh64 * deltaY)) / 32; /* SLOW */
-		if (hd < 0) {
-		    let hd = 32767;
-		}
-		let hseg = (lineX & 63) / 4;
-
-	    } else {
-		let hd = 32767;
-		let hseg = 0;
-	    }
-
-
-	    // Which is closer, the vertical wall or horizontal wall?
-	    if (vd < hd) {
-
-		// Vertical wall is closer, pack the v-values into the buffer
-		let wallDistances[pixel] = vd;
-		if (vtex < 0) {
-		    let wallPatterns[pixel] = patterns[((-vtex) * 16) - (vseg + 1)];
-		} else {
-		    let wallPatterns[pixel] = patterns[(vtex * 16) + (vseg - 16)];
-		}
-		
-		// Is the target in sight?
-		if (pixel = 128) {
-		    let targetWallDirection = 0;
-		    let targetWallNum = vwallLookup;
-		    if ((vtex = 3) | (vtex = -3)) {
-			let targetVisible = true;
-		    } else {
-			let targetVisible = false;
-		    }
-		}
-		
-	    } else {
-		
-		// Horizontal wall is closer, pack the h-values into the buffer
-		let wallDistances[pixel] = hd;
-		if (htex < 0) {
-		    let wallPatterns[pixel] = patterns[((-htex) * 16) - (hseg + 1)];
-		} else {
-		    let wallPatterns[pixel] = patterns[(htex * 16) + (hseg - 16)];
-		}
-
-		// Is the target in sight?
-		if (pixel = 128) {
-		    let targetWallDirection = 0;
-		    let targetWallNum = hwallLookup;
-		    if ((htex = 3) | (htex = -3)) {
-			let targetVisible = true;
-		    } else {
-			let targetVisible = false;
-		    }
-		}
-	    }
-
-	    // Move on to the next pixel
-	    let pixel = pixel + 1;
-
-	} // While pixel 
-	
-	return;
-
-    }
-
-    /** Change the texture of a target wall that has been hit */
-    function void untarget() {
-	if (targetVisible) {
-	    if (targetWallDirection = 0) {
-		let xWalls[targetWallNum] = 2;
-	    } else {
-		let yWalls[targetWallNum] = 2;
-	    }
-	    let targetVisible = false;
-	}
-	return;
-    }
-
-    /** Get the allowed paths*/
-    function int paths() {
-	return allowedPaths;
-    }
-
-    /** Is the target visible? */
-    function boolean targetInSight() {
-	return targetVisible;
-    }
-
-    /** Is the player in the exit room? */
-    function boolean atExit(int playerRoom) {
-	if (playerRoom = exit) {
-	    return true;
-	} else {
-	    return false;
-	}
-    }
-    
-    /** Unallocate the maze arrays and lookup tables*/
-    function void cleanup() {
-	do xWalls.dispose();
-	do yWalls.dispose();
-	do allowedPaths.dispose();
-	do patterns.dispose();
-	do tanTable.dispose();
-	do atanTable.dispose();
-	do maxDelta.dispose();
 	return;
     }
 
