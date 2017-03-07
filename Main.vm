@@ -1,4 +1,4 @@
-function Main.main 20
+function Main.main 16
 push constant 256
 call Array.new 1
 pop local 0
@@ -20,14 +20,6 @@ call Player.init 6
 pop temp 0
 call Display.init 0
 pop temp 0
-call Display.sc 0
-pop local 16
-call Display.sf 0
-pop local 17
-call Display.pc 0
-pop local 18
-call Display.pf 0
-pop local 19
 push constant 0
 pop local 3
 push constant 0
@@ -266,38 +258,22 @@ push local 8
 if-goto IF_TRUE12
 goto IF_FALSE12
 label IF_TRUE12
-push local 17
-push constant 32
-push constant 2
-push constant 3855
-call Display.bitmap 4
+call Display.drawSightFired 0
 pop temp 0
 goto IF_END12
 label IF_FALSE12
-push local 16
-push constant 32
-push constant 2
-push constant 3855
-call Display.bitmap 4
+call Display.drawSightClear 0
 pop temp 0
 label IF_END12
 push local 7
 if-goto IF_TRUE13
 goto IF_FALSE13
 label IF_TRUE13
-push local 19
-push constant 256
-push constant 4
-push constant 6160
-call Display.bitmap 4
+call Display.drawPistolFired 0
 pop temp 0
 goto IF_END13
 label IF_FALSE13
-push local 18
-push constant 256
-push constant 4
-push constant 6160
-call Display.bitmap 4
+call Display.drawPistolClear 0
 pop temp 0
 label IF_END13
 push local 11

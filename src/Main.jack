@@ -29,9 +29,6 @@ class Main {
 	var String endText, scoreText;
 	var int stepDelta;
 
-	// ... Variables storing bitmaps
-	var int sc, sf, pc, pf;
-
 	// Array initialisations
 	let wallDistances = Array.new(256);
 	let wallPatterns = Array.new(256);
@@ -41,12 +38,6 @@ class Main {
 	do Walls.init();
 	do Player.init(3, 32, 0, 6, 0, Walls.paths());
 	do Display.init();
-
-	// Fetch bitmaps (avoids 2 function calls per move)
-	let sc = Display.sc();
-	let sf = Display.sf();
-	let pc = Display.pc();
-	let pf = Display.pf();
 
 	// Initialisation of game variables
 	let key = 0;               /* which key the user pressed*/
@@ -148,14 +139,14 @@ class Main {
 		do Display.walls(wallDistances, wallPatterns);
 		
 		if (sightFired) {
-		    do Display.bitmap(sf, 32, 2, 3855);
+		    do Display.drawSightFired();
 		} else {
-		    do Display.bitmap(sc, 32, 2, 3855);
+		    do Display.drawSightClear();
 		}
 		if (pistolFired) {
-		    do Display.bitmap(pf, 256, 4, 6160);
+		    do Display.drawPistolFired();
 		} else {
-		    do Display.bitmap(pc, 256, 4, 6160);
+		    do Display.drawPistolClear();
 		}
 		
 		do Display.scores(targets, steps);
