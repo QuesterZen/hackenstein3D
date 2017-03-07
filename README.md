@@ -1,56 +1,88 @@
 # hackenstein3D
-Raycasting game for the Hack computer from Elements of Computing Systems / Coursera NAND2Tetris
-
-The Hack Computer is a very simple 16-bit computer with no built-in multiply, divide, bit-shift or floating point as designed an implemented in the book Elements of Computing Systems by Noam Nissan and Shimon Schoken. http://nand2tetris.org
-
-It is written in Jack, a Java-like language also implemented in the book. And designed to run on the VMEmulator provided by the website.
-
-I posted a short demo video on [youTube](https://youtu.be/inFJ5EyOhpM).
-
 
 HACKENSTEIN 3D - Escape from Castle Hackenstein, Part II
 --------------------------------------------------------
 
 ABOUT
 
-Hackenstein is an attempt to create a Castle Wolfenstein type experience
-on the Hack computer. The limitations of the Hack machine meant that
-several compromises were necessary! There are no Nazis for a start.
+Hackenstein 3D is a (very) simple first-person shooter /
+3D maze game. It is an attempt to recreate the experience 
+of Castle Wolfenstein on the Hack computer, whose many
+limitations have necessitated several compromises. 
+There are no Nazis, for a start!
 
-The most technical part of the program is the method of ray casting
-to work out what is visible at a given location on the screen. The
-algorithm here is purely 16-bit integer and minimises the number of
-divisions, and multiplications of large numbers. All of the trigonometric
-functions are provided via lookup tables. Most maths is done in 1/64ths
-to approximate floating point. I've used every trick I know
-to speed things up and get it working, so I hope you enjoy reading
-the code and working out how it was done.
-
-The program runs as fast as I can make it - the rendering to the screen
-on the VM Emulator is the main bottleneck. There are also a couple of
-minor visual glitches since it isn't practical to work around all possible
-integer overflows, but hopefully it won't spoil the experience too much.
+I have posted a short demo video of the game on [youTube](https://youtu.be/inFJ5EyOhpM).
 
 OBJECT OF THE GAME
 
 The object of the game is to find and destroy 3 targets painted on the
-walls and find the door to escape. You only have a small amount of time
+walls and reach the exit. You only have a small amount of time
 to achieve your goal.
 
-GAME INSTRUCTIONS
+GAME PLAYING INSTRUCTIONS
 
 Use the Arrow Keys to move around. And the Space Bar to shoot.
 To quit the game, press Q.
 
-You need to destroy the 3 targets and find the exit to win the game.
+To win the game, you need to shoot all three targets and reach the
+exit. You have 1000 "actions" to do this. Moving and turning take a action
+each; shooting takes 4 actions but you can move at the same time without
+additional cost.
 
-You have 1000 "actions" to do this. Moving and turning take 2 actions
-each; shooting takes 4.
+The eagle flags painted on the room are provided to help you navigate.
 
-The eagle flags painted on the room are there to help you navigate.
+RUNNING THE GAME
 
+Download the .vm files into a single directory. 
+Download the Hack VM Emulator from the NAND2tetris website: http://nand2tetris.org.
+Run the VMEmulator from a shell.
+Select 'File > Load' Program from the menu and point to the directory containing the .vm files
+Select 'View > Animate > No Animation' and set the slider to 'Fast'
+Finally press the '>>' button or F5 to run the game.
 
-CODE OUTLINE
+ABOUT THE PLATFORM
+
+Hackenstein 3D runs in conjunction with the Hack OS services on the Jack virtual machine which is designed to be compatable with the specifications of the Hack computer, it was programmed in the Jack programming language.
+
+The *Hack Computer* is a specification for a microcomputer with a very simple 16-bit CPU and 64K of built-in RAM (half of which is set aside for IO memory maps). The CPU has no built-in facility for multiply, divide, bit-shift or floating point. The Hack computer's design and implementation are detailed in the book 'Elements of Computing Systems' by Noam Nissan and Shimon Schoken and in the Coursera courses 'NAND2Tetris Part1 and Part2'. The website for the book and course is: http://nand2tetris.org
+
+The *Hack Operating System* conforms to an API specified in the book and course and provides functionality for text output, graphical output, simple maths functions, strings and memory management.
+
+The *Jack Virtual Machine* is a stack-based virtual machine whose specifications are also described in the book and course. The machine assumes that it is running on a Hack-compatible architecture and memory map and has available the services of the Hack Operating System. In practice, virtual machine programs are run on the VM Emulator supplied by the course authors and which can be downloaded from the course website. Other (faster) implementations are also available from students who have completed the course.
+
+The *Jack Programming language* is a simple Java-like language whose specification and implementation are also described in the book and course. A Jack compiler is available from the website.
+
+ABOUT THE DESIGN
+
+The key technical components of the program are: 
+
+*Ray casting*, which identifies what is visible 
+at a given location on the screen. It operates by identifying intercept
+points between a 'ray' from the player through a screen pixel and a
+possible wall location using simple trigonometry. In reality, the ray-
+casting is only 2D, with wall heights and textures added to give the
+illusion of true 3D. The primary difficulties in ray casting on the
+Hack platform involve using trigonometric functions without floating 
+point numbers, and avoiding integer overflow while maintaining accuracy. 
+The program achieves this by performing most calculations in 1/64ths 
+as an approximation of floating point numbers. The maths functions are
+pre-generated by Python scripts and imported in the form of large
+lookup tables.
+
+*Rendering*, which draws the scene with heights and textures to the
+screen. Because every pixel on the screen needs to be drawn to, the
+rendering loop is by far the most time critical part of the program.
+Many tricks are used to avoid function calls, multiplications, divisions,
+OS calls and array dereferencing. The code is very low-level and very
+fast, managing to redraw the entire scene in around 0.2 seconds.
+
+I've used pretty much every trick I know to get these two routines
+as fast, smooth and efficient as I can, so I hope the game is fun
+to play as well as being a demonstration of what is possible on
+the Hack computer. I hope you take the time to read some of the
+code and gain some enjoyment in working out how it was done.
+
+SOURCE CODE OUTLINE
 
 Main.jack
 	Controls user interaction and manages the game mechanics
@@ -83,8 +115,4 @@ Display.jack
 	the screen. Bitmaps are provided in words, while walls are
 	rendered in 16-bit strips. Note that the bitmaps are provided
 	via the same Array casting trick.
-	
-RUNNING THE GAME
 
-Run with the VMEmulator using the built-in OS library with animation
-turned OFF and speed set to FAST.
