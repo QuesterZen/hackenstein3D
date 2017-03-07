@@ -31,12 +31,12 @@ The eagle flags painted on the room are provided to help you navigate.
 
 RUNNING THE GAME
 
-. Download the .vm files into a single directory. 
-. Download the Hack VM Emulator from the NAND2tetris website: http://nand2tetris.org.
-. Run the VMEmulator from a shell.
-. Select 'File > Load' Program from the menu and point to the directory containing the .vm files
-. Select 'View > Animate > No Animation' and set the slider to 'Fast'
-. Finally press the '>>' button or F5 to run the game.
+* Download the .vm files into a single directory. 
+* Download the Hack VM Emulator from the NAND2tetris website: http://nand2tetris.org.
+* Run the VMEmulator from a shell.
+* Select 'File > Load' Program from the menu and point to the directory containing the .vm files
+* Select 'View > Animate > No Animation' and set the slider to 'Fast'
+* Finally press the '>>' button or F5 to run the game.
 
 ABOUT THE PLATFORM
 
