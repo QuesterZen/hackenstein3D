@@ -13,21 +13,26 @@ I have posted a short demo video of the game on [youTube](https://youtu.be/inFJ5
 
 OBJECT OF THE GAME
 
-The object of the game is to find and destroy 3 targets painted on the
-walls and reach the exit. You only have a small amount of time
-to achieve your goal.
+The object of the game is to destroy all of the targets painted on the
+walls and escape the castle before time runs out.
 
 GAME PLAYING INSTRUCTIONS
 
-Use the Arrow Keys to move around. And the Space Bar to shoot.
+Use the Arrow Keys to move around. 
+Press Space Bar to shoot.
 To quit the game, press Q.
 
-To win the game, you need to shoot all three targets and reach the
-exit. You have 1000 "actions" to do this. Moving and turning take one action
+To win the game, you need to:
+* shoot all three targets
+![targets](images/target.png)
+* use the eagle flags to help you navigate
+![flags](images/eagle.png)
+* reach the exit before you run out of actions 
+![exit](images/exit.png)
+
+You have 1000 "actions" to complete your mission. Moving and turning take one action
 each; shooting takes 4 actions but you can move at the same time without
 additional cost.
-
-The eagle flags painted on the room are provided to help you navigate.
 
 RUNNING THE GAME
 
